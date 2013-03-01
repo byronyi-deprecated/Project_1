@@ -115,6 +115,16 @@ void MainWindow::zoomOut()
 {
 
 }
+//left to do
+void MainWindow::setFColor()
+{
+
+}
+//left to do
+void MainWindow::setBColor()
+{
+
+}
 
 void MainWindow::aboutQt()
 {
@@ -213,19 +223,33 @@ void MainWindow::createActions()
             this, SLOT(aboutQt()));
 
     //Toolbar buttons
-    setFColor = new QAction(QIcon(":/images/fcolor_icon.bmp"),
-                            tr("Set Foreground Color"), this);
-    setBColor = new QAction(QIcon(":/images/bcolor_icon.bmp"),
-                            tr("Set Background Color"), this);
+    setFColorAction = new QAction(QIcon(":/images/fcolor_icon.bmp"),
+                            tr(""), this);
+    setFColorAction->setStatusTip(tr("Set Foreground Color"));
+    connect(setFColorAction, SIGNAL(triggered()),
+            this, SLOT(setFColor()));
+
+    setBColorAction = new QAction(QIcon(":/images/bcolor_icon.bmp"),
+                            tr(""), this);
+    setBColorAction->setStatusTip(tr("Set Background Color"));
+    connect(setBColorAction, SIGNAL(triggered()),
+            this, SLOT(setBColor()));
 
     setPen = new QAction(QIcon(":/images/pen_icon.bmp"),
-                         tr("Pen"), this);
+                         tr(""), this);
+    setPen->setStatusTip(tr("Pen"));
+
     setLine = new QAction(QIcon(":/images/line_icon.bmp"),
-                          tr("Line"), this);
+                          tr(""), this);
+    setLine->setStatusTip(tr("Line"));
+
     setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
-                            tr("Eraser"), this);
+                            tr(""), this);
+    setEraser->setStatusTip(tr("Eraser"));
+
     setRect = new QAction(QIcon(":/images/rect_icon.bmp"),
-                          tr("Rectangle"), this);
+                          tr(""), this);
+    setRect->setStatusTip(tr("Rectangle"));
 
     setPaintTool = new QActionGroup(this);
     setPaintTool->addAction(setPen);
@@ -279,15 +303,15 @@ void MainWindow::createToolBars()
     toolBar->addAction(clearAllAction);
     toolBar->addAction(resizeAction);
     toolBar->addSeparator();
-    toolBar->addAction(setFColor);
-    toolBar->addAction(setBColor);
+    toolBar->addAction(setFColorAction);
+    toolBar->addAction(setBColorAction);
     toolBar->addSeparator();
     toolBar->addActions(setPaintTool->actions());
 }
 //left to do
 void MainWindow::createStatusBar()
 {
-    locationLabel = new QLabel("w999");
+    locationLabel = new QLabel("");
     locationLabel->setAlignment(Qt::AlignHCenter);
     locationLabel->setMinimumSize(locationLabel->sizeHint());
 

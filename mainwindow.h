@@ -42,6 +42,8 @@ private slots:
     void resize();
     void zoomIn();
     void zoomOut();
+    void setFColor();
+    void setBColor();
     void aboutQt();
 
 private:
@@ -89,8 +91,8 @@ private:
     QAction *clearAllAction;
     QAction *resizeAction;
 
-    QAction *setFColor;
-    QAction *setBColor;
+    QAction *setFColorAction;
+    QAction *setBColorAction;
 
     QActionGroup *setPaintTool;
     QAction *setPen;

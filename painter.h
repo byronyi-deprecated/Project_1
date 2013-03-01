@@ -14,11 +14,15 @@ public:
     void clear();
     bool readFile(QString fileName);
     bool writeFile(QString fileName);
-    void unDo();
-    void reDo();
+    QColor curFColor() const {return foregroundColor;}
+    QColor curBColor() const {return backgroundColor;}
+    void setFColor(QColor curColor) {foregroundColor = curColor;}
+    void setBColor(QColor curColor) {backgroundColor = curColor;}
 public slots:
     void zoomIn();
     void zoomOut();
+    void unDo();
+    void reDo();
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);

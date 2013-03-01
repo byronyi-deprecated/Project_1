@@ -17,6 +17,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include <QActionGroup>
+#include <QColorDialog>
 
 class MainWindow : public QMainWindow
 {
@@ -36,14 +37,12 @@ private slots:
     bool saveAs();
     void about();
     void openRecentFile();
-    void unDo();
-    void reDo();
     void clearAll();
     void resize();
     void zoomIn();
     void zoomOut();
-    void setFColor();
-    void setBColor();
+    void changeFColor();
+    void changeBColor();
     void aboutQt();
 
 private:
@@ -91,8 +90,8 @@ private:
     QAction *clearAllAction;
     QAction *resizeAction;
 
-    QAction *setFColorAction;
-    QAction *setBColorAction;
+    QAction *changeFColorAction;
+    QAction *changeBColorAction;
 
     QActionGroup *setPaintTool;
     QAction *setPen;

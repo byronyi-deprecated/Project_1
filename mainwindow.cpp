@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     readSettings();
 
-    setWindowIcon(QIcon(":/images/icon.png"));
+    setWindowIcon(QIcon(":/images/icon.jpg"));
     setCurrentFile("");
 }
 
@@ -88,10 +88,6 @@ void MainWindow::openRecentFile()
     }
 }
 
-void MainWindow::unDo(){ painter->unDo(); }
-
-void MainWindow::reDo(){ painter->reDo(); }
-
 void MainWindow::clearAll()
 {
     int r = QMessageBox::warning(this, tr("Painter"), tr("Do you want to clear the image\n"
@@ -115,15 +111,19 @@ void MainWindow::zoomOut()
 {
 
 }
-//left to do
-void MainWindow::setFColor()
-{
 
+void MainWindow::changeFColor()
+{
+    painter->setFColor(QColorDialog::getColor(painter->curFColor(), this,
+                                              tr("Choose the foreground color"),
+                                              QColorDialog::ShowAlphaChannel));
 }
-//left to do
-void MainWindow::setBColor()
-{
 
+void MainWindow::changeBColor()
+{
+    painter->setBColor(QColorDialog::getColor(painter->curBColor(), this,
+                                              tr("Choose the background color"),
+                                              QColorDialog::ShowAlphaChannel));
 }
 
 void MainWindow::aboutQt()
@@ -181,14 +181,14 @@ void MainWindow::createActions()
     unDoAction->setShortcut(QKeySequence::Undo);
     unDoAction->setStatusTip(tr("Undo the last modification"));
     connect(unDoAction, SIGNAL(triggered()),
-            this, SLOT(unDo()));
+            painter, SLOT(unDo()));
 
     reDoAction = new QAction(tr("&Redo"), this);
     reDoAction->setIcon(QIcon(":/images/redo_icon.bmp"));
     reDoAction->setShortcut(QKeySequence::Redo);
     reDoAction->setStatusTip(tr("Redo the last modification undone"));
     connect(reDoAction, SIGNAL(triggered()),
-            this, SLOT(reDo()));
+            painter, SLOT(reDo()));
 
     clearAllAction = new QAction(tr("Clear All"), this);
     clearAllAction->setIcon(QIcon(":/images/clearall_icon.bmp"));
@@ -223,39 +223,43 @@ void MainWindow::createActions()
             this, SLOT(aboutQt()));
 
     //Toolbar buttons
-    setFColorAction = new QAction(QIcon(":/images/fcolor_icon.bmp"),
+    changeFColorAction = new QAction(QIcon(":/images/fcolor_icon.bmp"),
                             tr(""), this);
-    setFColorAction->setStatusTip(tr("Set Foreground Color"));
-    connect(setFColorAction, SIGNAL(triggered()),
-            this, SLOT(setFColor()));
+    changeFColorAction->setStatusTip(tr("Set Foreground Color"));
+    connect(changeFColorAction, SIGNAL(triggered()),
+            this, SLOT(changeFColor()));
 
-    setBColorAction = new QAction(QIcon(":/images/bcolor_icon.bmp"),
+    changeBColorAction = new QAction(QIcon(":/images/bcolor_icon.bmp"),
                             tr(""), this);
-    setBColorAction->setStatusTip(tr("Set Background Color"));
-    connect(setBColorAction, SIGNAL(triggered()),
-            this, SLOT(setBColor()));
+    changeBColorAction->setStatusTip(tr("Set Background Color"));
+    connect(changeBColorAction, SIGNAL(triggered()),
+            this, SLOT(changeBColor()));
 
     setPen = new QAction(QIcon(":/images/pen_icon.bmp"),
                          tr(""), this);
     setPen->setStatusTip(tr("Pen"));
+    setPen->setCheckable(true);
 
     setLine = new QAction(QIcon(":/images/line_icon.bmp"),
                           tr(""), this);
     setLine->setStatusTip(tr("Line"));
-
-    setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
-                            tr(""), this);
-    setEraser->setStatusTip(tr("Eraser"));
+    setLine->setCheckable(true);
 
     setRect = new QAction(QIcon(":/images/rect_icon.bmp"),
                           tr(""), this);
     setRect->setStatusTip(tr("Rectangle"));
+    setRect->setCheckable(true);
+
+    setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
+                            tr(""), this);
+    setEraser->setStatusTip(tr("Eraser"));
+    setEraser->setCheckable(true);
 
     setPaintTool = new QActionGroup(this);
     setPaintTool->addAction(setPen);
     setPaintTool->addAction(setLine);
-    setPaintTool->addAction(setEraser);
     setPaintTool->addAction(setRect);
+    setPaintTool->addAction(setEraser);
 }
 
 void MainWindow::createMenus()
@@ -303,8 +307,8 @@ void MainWindow::createToolBars()
     toolBar->addAction(clearAllAction);
     toolBar->addAction(resizeAction);
     toolBar->addSeparator();
-    toolBar->addAction(setFColorAction);
-    toolBar->addAction(setBColorAction);
+    toolBar->addAction(changeFColorAction);
+    toolBar->addAction(changeBColorAction);
     toolBar->addSeparator();
     toolBar->addActions(setPaintTool->actions());
 }

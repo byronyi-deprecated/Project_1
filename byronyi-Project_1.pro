@@ -16,5 +16,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     painter.cpp
 
+RESOURCES = spreadsheet.qrc
+
 HEADERS  += mainwindow.h \
     painter.h

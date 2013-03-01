@@ -16,6 +16,7 @@
 #include <QString>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QActionGroup>
 
 class MainWindow : public QMainWindow
 {
@@ -41,7 +42,6 @@ private slots:
     void resize();
     void zoomIn();
     void zoomOut();
-//    bool showToolBar();
     void aboutQt();
 
 private:
@@ -88,6 +88,15 @@ private:
     QAction *reDoAction;
     QAction *clearAllAction;
     QAction *resizeAction;
+
+    QAction *setFColor;
+    QAction *setBColor;
+
+    QActionGroup *setPaintTool;
+    QAction *setPen;
+    QAction *setLine;
+    QAction *setEraser;
+    QAction *setRect;
 
     QAction *zoomInAction;
     QAction *zoomOutAction;

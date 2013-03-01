@@ -4,6 +4,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    painter = new Painter(this);
+    setCentralWidget(painter);
     createActions();
     createToolBars();
     createMenus();
@@ -85,20 +87,18 @@ void MainWindow::openRecentFile()
             loadFile(action->data().toString());
     }
 }
-//left to do
-void MainWindow::unDo()
-{
 
-}
-//left to do
-void MainWindow::reDo()
-{
+void MainWindow::unDo(){ painter->unDo(); }
 
-}
-//left to do
+void MainWindow::reDo(){ painter->reDo(); }
+
 void MainWindow::clearAll()
 {
-
+    int r = QMessageBox::warning(this, tr("Painter"), tr("Do you want to clear the image\n"
+                                                         "with the background color?"),
+                                 QMessageBox::Yes | QMessageBox::Cancel);
+    if(r == QMessageBox::Yes) painter->clear();
+    if(r == QMessageBox::Cancel) return;
 }
 //left to do
 void MainWindow::resize()
@@ -125,28 +125,28 @@ void MainWindow::createActions()
 {
     //File menu
     newAction = new QAction(tr("&New"), this);
-    newAction->setIcon(QIcon(":/images/new.png"));
+    newAction->setIcon(QIcon(":/images/new_icon.bmp"));
     newAction->setShortcut(QKeySequence::New);
     newAction->setStatusTip(tr("Create a new image"));
     connect(newAction, SIGNAL(triggered()),
             this, SLOT(newFile()));
 
     openAction = new QAction(tr("&Open..."), this);
-    openAction->setIcon(QIcon(":/images/open.png"));
+    openAction->setIcon(QIcon(":/images/open_icon.bmp"));
     openAction->setShortcut(QKeySequence::Open);
     openAction->setStatusTip(tr("Open a image"));
     connect(openAction, SIGNAL(triggered()),
             this, SLOT(open()));
 
     saveAction = new QAction(tr("&Save"), this);
-    saveAction->setIcon(QIcon(":/images/save.png"));
+    saveAction->setIcon(QIcon(":/images/save_icon.bmp"));
     saveAction->setShortcut(QKeySequence::Save);
     saveAction->setStatusTip(tr("Save the current image"));
     connect(saveAction, SIGNAL(triggered()),
             this, SLOT(save()));
 
     saveAsAction = new QAction(tr("Save &As..."), this);
-    saveAsAction->setIcon(QIcon(":/images/saveAs.png"));
+    saveAsAction->setIcon(QIcon(":/images/save_icon.bmp"));
     saveAsAction->setShortcut(QKeySequence::SaveAs);
     saveAsAction->setStatusTip(tr("Save the current image as..."));
     connect(saveAsAction, SIGNAL(triggered()),
@@ -160,9 +160,6 @@ void MainWindow::createActions()
                 this, SLOT(openRecentFile()));
     }
 
-    closeAction = new QAction(tr("&Close"), this);
-    closeAction->setStatusTip(tr("To be implemented"));
-
     exitAction = new QAction(tr("&Exit"), this);
     exitAction->setShortcut(QKeySequence::Quit);
     exitAction->setStatusTip(tr("Exit the application"));
@@ -170,44 +167,41 @@ void MainWindow::createActions()
 
     //Edit Menu
     unDoAction = new QAction(tr("&Undo"), this);
-    unDoAction->setIcon(QIcon(":/images/unDo.png"));
+    unDoAction->setIcon(QIcon(":/images/undo_icon.bmp"));
     unDoAction->setShortcut(QKeySequence::Undo);
     unDoAction->setStatusTip(tr("Undo the last modification"));
     connect(unDoAction, SIGNAL(triggered()),
             this, SLOT(unDo()));
 
     reDoAction = new QAction(tr("&Redo"), this);
-    reDoAction->setIcon(QIcon(":/images/reDo.png"));
+    reDoAction->setIcon(QIcon(":/images/redo_icon.bmp"));
     reDoAction->setShortcut(QKeySequence::Redo);
     reDoAction->setStatusTip(tr("Redo the last modification undone"));
     connect(reDoAction, SIGNAL(triggered()),
             this, SLOT(reDo()));
 
     clearAllAction = new QAction(tr("Clear All"), this);
-    clearAllAction->setIcon(QIcon(":/images/clearAll.png"));
+    clearAllAction->setIcon(QIcon(":/images/clearall_icon.bmp"));
     clearAllAction->setStatusTip(tr("Clear the image"));
     connect(clearAllAction, SIGNAL(triggered()),
             this, SLOT(clearAll()));
 
     resizeAction = new QAction(tr("Resize"), this);
-    resizeAction->setIcon(QIcon(":/images/resize.png"));
+    resizeAction->setIcon(QIcon(":/images/resize_icon.bmp"));
     resizeAction->setStatusTip(tr("Resize the image"));
     connect(resizeAction, SIGNAL(triggered()),
             this, SLOT(resize()));
 
     //View Menu
     zoomInAction = new QAction(tr("Zoom in"), this);
-    zoomInAction->setIcon(QIcon(":/images/zoomIn.png"));
     zoomInAction->setStatusTip(tr("Zoom in the image"));
     connect(zoomInAction, SIGNAL(triggered()),
             this, SLOT(zoomIn()));
 
     zoomOutAction = new QAction(tr("Zoom out"), this);
-    zoomOutAction->setIcon(QIcon(":/images/zoomOut.png"));
     zoomOutAction->setStatusTip(tr("Zoom out the image"));
     connect(zoomOutAction, SIGNAL(triggered()),
             this, SLOT(zoomOut()));
-
 
     //Help Menu
     aboutAction = new QAction(tr("About"), this);
@@ -215,10 +209,29 @@ void MainWindow::createActions()
             this, SLOT(about()));
 
     aboutQtAction = new QAction(tr("About &Qt"), this);
-    aboutQtAction->setIcon(QIcon(":/images/qt.png"));
     connect(aboutQtAction, SIGNAL(triggered()),
             this, SLOT(aboutQt()));
 
+    //Toolbar buttons
+    setFColor = new QAction(QIcon(":/images/fcolor_icon.bmp"),
+                            tr("Set Foreground Color"), this);
+    setBColor = new QAction(QIcon(":/images/bcolor_icon.bmp"),
+                            tr("Set Background Color"), this);
+
+    setPen = new QAction(QIcon(":/images/pen_icon.bmp"),
+                         tr("Pen"), this);
+    setLine = new QAction(QIcon(":/images/line_icon.bmp"),
+                          tr("Line"), this);
+    setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
+                            tr("Eraser"), this);
+    setRect = new QAction(QIcon(":/images/rect_icon.bmp"),
+                          tr("Rectangle"), this);
+
+    setPaintTool = new QActionGroup(this);
+    setPaintTool->addAction(setPen);
+    setPaintTool->addAction(setLine);
+    setPaintTool->addAction(setEraser);
+    setPaintTool->addAction(setRect);
 }
 
 void MainWindow::createMenus()
@@ -265,6 +278,11 @@ void MainWindow::createToolBars()
     toolBar->addAction(reDoAction);
     toolBar->addAction(clearAllAction);
     toolBar->addAction(resizeAction);
+    toolBar->addSeparator();
+    toolBar->addAction(setFColor);
+    toolBar->addAction(setBColor);
+    toolBar->addSeparator();
+    toolBar->addActions(setPaintTool->actions());
 }
 //left to do
 void MainWindow::createStatusBar()

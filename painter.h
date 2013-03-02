@@ -5,12 +5,16 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPainter>
+#include <Qsize>
+#include <QInputDialog>
 
 class Painter : public QWidget
 {
     Q_OBJECT
 public:
     Painter(QWidget *parent = 0);
+    void init();
     void clear();
     bool readFile(QString fileName);
     bool writeFile(QString fileName);
@@ -29,8 +33,11 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
 private:
+    void setSize();
+
     enum toolState {null, pen, line, eraser, rectangle};
-    QPixmap pixmap;
+    QPixmap *pixmap;
+    QSize curSize;
     QColor foregroundColor;
     QColor backgroundColor;
 };

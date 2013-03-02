@@ -50,6 +50,7 @@ private:
     void createMenus();
     void createToolBars();
     void createStatusBar();
+    void setSize(QSize &);
     void readSettings();
     void writeSettings();
     bool okToContinue();

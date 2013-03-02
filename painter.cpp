@@ -5,6 +5,15 @@ Painter::Painter(QWidget *parent) :
 {
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
+    pixmap = new QPixmap;
+    curSize.setHeight(0);
+    curSize.setWidth(0);
+}
+
+void Painter::init()
+{
+    setSize();
+    update();
 }
 
 void Painter::clear()
@@ -42,22 +51,39 @@ void Painter::zoomOut()
 
 }
 
-void Painter::mousePressEvent(QMouseEvent *)
+void Painter::mousePressEvent(QMouseEvent *e)
 {
 
 }
 
-void Painter::mouseDoubleClickEvent(QMouseEvent *)
+void Painter::mouseDoubleClickEvent(QMouseEvent *e)
 {
 
 }
 
-void Painter::mouseMoveEvent(QMouseEvent *)
+void Painter::mouseMoveEvent(QMouseEvent *e)
 {
 
 }
 
-void Painter::paintEvent(QPaintEvent *)
+void Painter::paintEvent(QPaintEvent *e)
 {
+    QPainter p(this);
+}
 
+void Painter::setSize()
+{
+    bool ok;
+    int width = QInputDialog::getInt(this, tr("Painter"),
+                                         tr("Please enter the width"
+                                            "(less than 1024)"),
+                                         400, 0, 1024, 1, &ok);
+    if(!ok) return;
+    int height = QInputDialog::getInteger(this, tr("Painter"),
+                                         tr("Please enter the height"
+                                            "(less than 1024)"),
+                                         300, 0, 1024, 1, &ok);
+    if(!ok) return;
+    curSize.setWidth(width);
+    curSize.setHeight(height);
 }

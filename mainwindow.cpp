@@ -35,7 +35,7 @@ void MainWindow::newFile()
 {
     if(okToContinue())
     {
-        painter->clear();
+        painter->init();
         setCurrentFile("");
     }
 }

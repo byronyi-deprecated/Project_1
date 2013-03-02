@@ -3,17 +3,16 @@
 Painter::Painter(QWidget *parent) :
     QWidget(parent)
 {
-    setBackgroundRole(QPalette::Base);
-    setAutoFillBackground(true);
+    setBackgroundRole(QPalette::Window);
     pixmap = new QPixmap;
-    curSize.setHeight(0);
-    curSize.setWidth(0);
+    isNull = true;
 }
 
 void Painter::init()
 {
     setSize();
     update();
+    isNull = false;
 }
 
 void Painter::clear()
@@ -23,12 +22,18 @@ void Painter::clear()
 
 bool Painter::readFile(QString fileName)
 {
-    return 1;
+    if(!fileName.isEmpty())
+    {
+        pixmap->load(fileName);
+        update();
+        isNull = false;
+    }
+    return !fileName.isEmpty();
 }
 
 bool Painter::writeFile(QString fileName)
 {
-    return 1;
+    return pixmap->save(fileName);
 }
 
 void Painter::unDo()
@@ -69,21 +74,31 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
 void Painter::paintEvent(QPaintEvent *e)
 {
     QPainter p(this);
+    if(!pixmap->isNull())
+    {
+        p.drawPixmap(0, 0, (*pixmap));
+    }
 }
 
-void Painter::setSize()
+bool Painter::setSize()
 {
     bool ok;
     int width = QInputDialog::getInt(this, tr("Painter"),
                                          tr("Please enter the width"
                                             "(less than 1024)"),
-                                         400, 0, 1024, 1, &ok);
-    if(!ok) return;
-    int height = QInputDialog::getInteger(this, tr("Painter"),
+                                     pixmap->width(), 0,
+                                     1024, 1, &ok);
+    if(!ok) return false;
+    int height = QInputDialog::getInt(this, tr("Painter"),
                                          tr("Please enter the height"
                                             "(less than 1024)"),
-                                         300, 0, 1024, 1, &ok);
-    if(!ok) return;
-    curSize.setWidth(width);
-    curSize.setHeight(height);
+                                      pixmap->height(), 0,
+                                      1024, 1, &ok);
+    if(!ok) return false;
+    if(width == pixmap->width() &&
+            height == pixmap->height())
+        return false;
+    *pixmap = pixmap->scaled(width, height);
+    update();
+    return true;
 }

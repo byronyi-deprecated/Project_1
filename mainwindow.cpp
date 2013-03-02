@@ -54,13 +54,14 @@ void MainWindow::open()
 
 bool MainWindow::save()
 {
-       if(curFile.isEmpty()) return saveAs();
-       else
-            return saveFile(curFile);
+    if(painter->isNull) return true;
+    if(curFile.isEmpty()) return saveAs();
+    return saveFile(curFile);
 }
 
 bool MainWindow::saveAs()
 {
+    if(painter->isNull) return true;
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save image"), ".",
                                                     tr("bitmap (*.bmp)"));
@@ -90,16 +91,18 @@ void MainWindow::openRecentFile()
 
 void MainWindow::clearAll()
 {
+    if(painter->isNull) return;
     int r = QMessageBox::warning(this, tr("Painter"), tr("Do you want to clear the image\n"
                                                          "with the background color?"),
                                  QMessageBox::Yes | QMessageBox::Cancel);
     if(r == QMessageBox::Yes) painter->clear();
     if(r == QMessageBox::Cancel) return;
 }
-//left to do
+
 void MainWindow::resize()
 {
-
+    if(painter->isNull) return;
+    setWindowModified(painter->setSize());
 }
 //left to do
 void MainWindow::zoomIn()

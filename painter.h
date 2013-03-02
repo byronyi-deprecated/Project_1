@@ -22,22 +22,23 @@ public:
     QColor curBColor() const {return backgroundColor;}
     void setFColor(QColor curColor) {foregroundColor = curColor;}
     void setBColor(QColor curColor) {backgroundColor = curColor;}
+    bool isNull;
 public slots:
     void zoomIn();
     void zoomOut();
     void unDo();
     void reDo();
+    bool setSize();
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
 private:
-    void setSize();
+
 
     enum toolState {null, pen, line, eraser, rectangle};
     QPixmap *pixmap;
-    QSize curSize;
     QColor foregroundColor;
     QColor backgroundColor;
 };

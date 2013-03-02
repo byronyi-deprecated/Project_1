@@ -4,8 +4,10 @@ Painter::Painter(QWidget *parent) :
     QWidget(parent)
 {
     setBackgroundRole(QPalette::Window);
-    pixmap = new QPixmap;
     isNull = true;
+    pixmap = new QPixmap(0, 0);
+    pixmap->fill();
+    update();
 }
 
 void Painter::init()
@@ -98,6 +100,11 @@ bool Painter::setSize()
     if(width == pixmap->width() &&
             height == pixmap->height())
         return false;
+    if(pixmap->isNull())
+    {
+        *pixmap = QPixmap(1, 1);
+        pixmap->fill();
+    }
     *pixmap = pixmap->scaled(width, height);
     update();
     return true;

@@ -44,6 +44,7 @@ private slots:
     void changeFColor();
     void changeBColor();
     void aboutQt();
+    void updateStatusBar();
 
 private:
     void createActions();
@@ -63,6 +64,7 @@ private:
     Painter *painter;
 
     QLabel *locationLabel;
+    QLabel *zoomFactorLabel;
     QLabel *frontColorLabel;
     QLabel *backgroundColorLabel;
     QStringList recentFiles;

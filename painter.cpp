@@ -7,6 +7,7 @@ Painter::Painter(QWidget *parent) :
     isNull = true;
     pixmap = new QPixmap;
     rect = new QRect(this->pos(), QSize(0, 0));
+    this->setMouseTracking(true);
 }
 
 void Painter::init()
@@ -20,6 +21,8 @@ void Painter::init()
 
 void Painter::clear()
 {
+    zoomFactor = 1.0;
+    rect->setSize(pixmap->size() * zoomFactor);
     pixmap->fill();
 }
 
@@ -54,6 +57,7 @@ void Painter::reDo()
 void Painter::setZoomFactor(double z)
 {
     if(z < 0) zoomFactor = 0.001; else zoomFactor = z;
+    emit zoomFactorChanged();
     rect->setSize(pixmap->size() * zoomFactor);
     update();
 }
@@ -99,7 +103,8 @@ void Painter::mouseDoubleClickEvent(QMouseEvent *e)
 
 void Painter::mouseMoveEvent(QMouseEvent *e)
 {
-
+    cursorPos = e->pos();
+    emit cursorChanged();
 }
 
 void Painter::paintEvent(QPaintEvent *e)

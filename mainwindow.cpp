@@ -104,13 +104,13 @@ void MainWindow::resize()
     if(painter->isNull) return;
     setWindowModified(painter->setSize());
 }
-//left to do
+
 void MainWindow::zoomIn()
 {
     double zoomFactor = painter->curZoomFactor() * 1.25;
     painter->setZoomFactor(zoomFactor);
 }
-//left to do
+
 void MainWindow::zoomOut()
 {
     double zoomFactor = painter->curZoomFactor() * 0.8;
@@ -317,14 +317,35 @@ void MainWindow::createToolBars()
     toolBar->addSeparator();
     toolBar->addActions(setPaintTool->actions());
 }
-//left to do
+
 void MainWindow::createStatusBar()
 {
-    locationLabel = new QLabel("");
+    locationLabel = new QLabel("0, 0");
     locationLabel->setAlignment(Qt::AlignHCenter);
     locationLabel->setMinimumSize(locationLabel->sizeHint());
 
+    zoomFactorLabel = new QLabel(tr("Zoom factor") + ": 1.0");
+
     statusBar()->addWidget(locationLabel);
+    statusBar()->addWidget(zoomFactorLabel);
+    connect(painter, SIGNAL(cursorChanged()),
+            this, SLOT(updateStatusBar()));
+    connect(painter, SIGNAL(zoomFactorChanged()),
+            this, SLOT(updateStatusBar()));
+    updateStatusBar();
+}
+
+void MainWindow::updateStatusBar()
+{
+    QString pos = tr("Cursor location: ");
+    pos += QString::number(painter->curXPos());
+    pos += ", ";
+    pos += QString::number(painter->curYPos());
+    locationLabel->setText(pos);
+
+    QString zoomFactor = tr("Zoom factor =");
+    zoomFactor += QString::number(painter->curZoomFactor());
+    zoomFactorLabel->setText(zoomFactor);
 }
 
 void MainWindow::readSettings()

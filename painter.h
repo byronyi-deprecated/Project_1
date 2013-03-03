@@ -19,6 +19,8 @@ public:
     void clear();
     bool readFile(QString fileName);
     bool writeFile(QString fileName);
+    int curXPos() const {return cursorPos.x();}
+    int curYPos() const {return cursorPos.y();}
     QColor curFColor() const {return foregroundColor;}
     QColor curBColor() const {return backgroundColor;}
     QSize curSize() const
@@ -32,6 +34,9 @@ public:
 public slots:
     void unDo();
     void reDo();
+signals:
+    void cursorChanged();
+    void zoomFactorChanged();
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);
@@ -42,6 +47,7 @@ private:
 
     enum toolState {null, pen, line, eraser, rectangle};
     QRect *rect;
+    QPoint cursorPos;
     QPixmap *pixmap;
     QColor foregroundColor;
     QColor backgroundColor;

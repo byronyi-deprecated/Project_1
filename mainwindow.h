@@ -79,14 +79,20 @@ private:
     QMenu *editMenu;
     QMenu *viewMenu;
     QMenu *helpMenu;
-
     QToolBar *toolBar;
+
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
     QAction *saveAsAction;
     QAction *closeAction;
     QAction *exitAction;
+
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
+
+    QAction *aboutAction;
+    QAction *aboutQtAction;
 
     QAction *unDoAction;
     QAction *reDoAction;
@@ -101,12 +107,6 @@ private:
     QAction *setLine;
     QAction *setEraser;
     QAction *setRect;
-
-    QAction *zoomInAction;
-    QAction *zoomOutAction;
-
-    QAction *aboutAction;
-    QAction *aboutQtAction;
 };
 
 #endif // MAINWINDOW_H

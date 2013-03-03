@@ -36,6 +36,7 @@ void MainWindow::newFile()
     if(okToContinue())
     {
         resize();
+        painter->clear();
         setCurrentFile("");
     }
 }
@@ -256,21 +257,25 @@ void MainWindow::createActions()
                          tr(""), this);
     setPen->setStatusTip(tr("Pen"));
     setPen->setCheckable(true);
+    connect(setPen, SIGNAL(toggled(bool)), painter, SLOT(isPen(bool)));
 
     setLine = new QAction(QIcon(":/images/line_icon.bmp"),
                           tr(""), this);
     setLine->setStatusTip(tr("Line"));
     setLine->setCheckable(true);
+    connect(setLine, SIGNAL(toggled(bool)), painter, SLOT(isLine(bool)));
 
     setRect = new QAction(QIcon(":/images/rect_icon.bmp"),
                           tr(""), this);
     setRect->setStatusTip(tr("Rectangle"));
     setRect->setCheckable(true);
+    connect(setRect, SIGNAL(toggled(bool)), painter, SLOT(isRect(bool)));
 
     setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
                             tr(""), this);
     setEraser->setStatusTip(tr("Eraser"));
     setEraser->setCheckable(true);
+    connect(setEraser, SIGNAL(toggled(bool)), painter, SLOT(isEraser(bool)));
 
     setPaintTool = new QActionGroup(this);
     setPaintTool->addAction(setPen);

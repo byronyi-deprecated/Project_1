@@ -9,24 +9,24 @@
 #include <Qsize>
 #include <QInputDialog>
 #include <QRect>
+#include <QErrorMessage>
 
 class Painter : public QWidget
 {
     Q_OBJECT
 public:
     Painter(QWidget *parent = 0);
-    void init();
     void clear();
     bool readFile(QString fileName);
     bool writeFile(QString fileName);
     int curXPos() const {return cursorPos.x();}
     int curYPos() const {return cursorPos.y();}
-    QColor curFColor() const {return foregroundColor;}
+//    QColor curFColor() const {return foregroundColor;}
     QColor curBColor() const {return backgroundColor;}
     QSize curSize() const
         {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
     double curZoomFactor() const {return zoomFactor;}
-    void setFColor(QColor curColor) {foregroundColor = curColor;}
+    void setFColor(QColor curColor) {brush->setColor(curColor);}
     void setBColor(QColor curColor) {backgroundColor = curColor;}
     bool setSize(QSize size);
     void setZoomFactor(double z);
@@ -34,6 +34,10 @@ public:
 public slots:
     void unDo();
     void reDo();
+    void isPen(bool toggled) {tool = toggled ? pen : tool;}
+    void isLine(bool toggled){tool = toggled ? line : tool;}
+    void isRect(bool toggled) {tool = toggled? rect : tool;}
+    void isEraser(bool toggled) {tool = toggled? eraser : tool;}
 signals:
     void cursorChanged();
     void zoomFactorChanged();
@@ -43,15 +47,18 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
 private:
-
-
-    enum toolState {null, pen, line, eraser, rectangle};
-    QRect *rect;
+    void createPaintDevice();
+    enum Tool {null, pen, line, rect, eraser} tool;
+    QRect *paintRect;
     QPoint cursorPos;
     QPixmap *pixmap;
-    QColor foregroundColor;
+    QVector<QPicture> paintActions;
+    QVector<QPicture> reDoActions;
     QColor backgroundColor;
     double zoomFactor;
+    QPainter *painter;
+    QPen *p;
+    QBrush *brush;
 };
 
 #endif // PAINTER_H

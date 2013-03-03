@@ -28,9 +28,9 @@ public:
     double curZoomFactor() const {return zoomFactor;}
     void setFColor(QColor curColor) {foregroundColor = curColor;}
     void setBColor(QColor curColor) {backgroundColor = curColor;}
-    bool setSize();
+    bool setSize(QSize size);
     void setZoomFactor(double z);
-    bool isNull;
+    bool isNull() {return pixmap->isNull();}
 public slots:
     void unDo();
     void reDo();

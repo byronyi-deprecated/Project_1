@@ -35,7 +35,7 @@ void MainWindow::newFile()
 {
     if(okToContinue())
     {
-        painter->init();
+        resize();
         setCurrentFile("");
     }
 }
@@ -54,14 +54,14 @@ void MainWindow::open()
 
 bool MainWindow::save()
 {
-    if(painter->isNull) return true;
+    if(painter->isNull()) return true;
     if(curFile.isEmpty()) return saveAs();
     return saveFile(curFile);
 }
 
 bool MainWindow::saveAs()
 {
-    if(painter->isNull) return true;
+    if(painter->isNull()) return true;
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save image"), ".",
                                                     tr("bitmap (*.bmp)"));
@@ -91,7 +91,7 @@ void MainWindow::openRecentFile()
 
 void MainWindow::clearAll()
 {
-    if(painter->isNull) return;
+    if(painter->isNull()) return;
     int r = QMessageBox::warning(this, tr("Painter"), tr("Do you want to clear the image\n"
                                                          "with the background color?"),
                                  QMessageBox::Yes | QMessageBox::Cancel);
@@ -101,8 +101,20 @@ void MainWindow::clearAll()
 
 void MainWindow::resize()
 {
-    if(painter->isNull) return;
-    setWindowModified(painter->setSize());
+    bool ok;
+    int width = QInputDialog::getInt(this, tr("Painter"),
+                                         tr("Please enter the width"
+                                            "(less than 1024)"),
+                                     painter->curSize().width(), 0,
+                                     1024, 1, &ok);
+    if(!ok) return;
+    int height = QInputDialog::getInt(this, tr("Painter"),
+                                         tr("Please enter the height"
+                                            "(less than 1024)"),
+                                      painter->curSize().height(), 0,
+                                      1024, 1, &ok);
+    if(!ok) return;
+    setWindowModified(painter->setSize(QSize(width, height)));
 }
 
 void MainWindow::zoomIn()

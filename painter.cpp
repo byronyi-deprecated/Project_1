@@ -4,19 +4,9 @@ Painter::Painter(QWidget *parent) :
     QWidget(parent)
 {
     setBackgroundRole(QPalette::Window);
-    isNull = true;
     pixmap = new QPixmap;
     rect = new QRect(this->pos(), QSize(0, 0));
     this->setMouseTracking(true);
-}
-
-void Painter::init()
-{
-    delete pixmap;
-    pixmap = new QPixmap;
-    setSize();
-    update();
-    isNull = false;
 }
 
 void Painter::clear()
@@ -34,7 +24,6 @@ bool Painter::readFile(QString fileName)
         zoomFactor = 1.0;
         rect->setSize(pixmap->size());
         update();
-        isNull = false;
     }
     return !fileName.isEmpty();
 }
@@ -62,31 +51,17 @@ void Painter::setZoomFactor(double z)
     update();
 }
 
-bool Painter::setSize()
-{
-    bool ok;
-    int width = QInputDialog::getInt(this, tr("Painter"),
-                                         tr("Please enter the width"
-                                            "(less than 1024)"),
-                                     pixmap->width(), 0,
-                                     1024, 1, &ok);
-    if(!ok) return false;
-    int height = QInputDialog::getInt(this, tr("Painter"),
-                                         tr("Please enter the height"
-                                            "(less than 1024)"),
-                                      pixmap->height(), 0,
-                                      1024, 1, &ok);
-    if(!ok) return false;
-    if(width == pixmap->width() &&
-            height == pixmap->height())
+bool Painter::setSize(QSize size)
+{   
+    if(size == curSize())
         return false;
     if(pixmap->isNull())
     {
         *pixmap = QPixmap(1, 1);
         pixmap->fill();
     }
-    *pixmap = pixmap->scaled(width, height);
-    rect->setSize(QSize(width, height));
+    *pixmap = pixmap->scaled(size);
+    rect->setSize(size);
     update();
     return true;
 }

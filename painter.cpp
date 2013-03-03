@@ -5,13 +5,14 @@ Painter::Painter(QWidget *parent) :
 {
     setBackgroundRole(QPalette::Window);
     isNull = true;
-    pixmap = new QPixmap(0, 0);
-    pixmap->fill();
-    update();
+    pixmap = new QPixmap;
+    rect = new QRect(this->pos(), QSize(0, 0));
 }
 
 void Painter::init()
 {
+    delete pixmap;
+    pixmap = new QPixmap;
     setSize();
     update();
     isNull = false;
@@ -19,7 +20,7 @@ void Painter::init()
 
 void Painter::clear()
 {
-
+    pixmap->fill();
 }
 
 bool Painter::readFile(QString fileName)
@@ -27,6 +28,8 @@ bool Painter::readFile(QString fileName)
     if(!fileName.isEmpty())
     {
         pixmap->load(fileName);
+        zoomFactor = 1.0;
+        rect->setSize(pixmap->size());
         update();
         isNull = false;
     }
@@ -50,36 +53,16 @@ void Painter::reDo()
 
 void Painter::zoomIn()
 {
-
+    zoomFactor *= 1.25;
+    rect->setSize(pixmap->size() * zoomFactor);
+    update();
 }
 
 void Painter::zoomOut()
 {
-
-}
-
-void Painter::mousePressEvent(QMouseEvent *e)
-{
-
-}
-
-void Painter::mouseDoubleClickEvent(QMouseEvent *e)
-{
-
-}
-
-void Painter::mouseMoveEvent(QMouseEvent *e)
-{
-
-}
-
-void Painter::paintEvent(QPaintEvent *e)
-{
-    QPainter p(this);
-    if(!pixmap->isNull())
-    {
-        p.drawPixmap(0, 0, (*pixmap));
-    }
+    zoomFactor *= 0.8;
+    rect->setSize(pixmap->size() * zoomFactor);
+    update();
 }
 
 bool Painter::setSize()
@@ -106,6 +89,31 @@ bool Painter::setSize()
         pixmap->fill();
     }
     *pixmap = pixmap->scaled(width, height);
+    rect->setSize(QSize(width, height));
     update();
     return true;
+}
+
+void Painter::mousePressEvent(QMouseEvent *e)
+{
+
+}
+
+void Painter::mouseDoubleClickEvent(QMouseEvent *e)
+{
+
+}
+
+void Painter::mouseMoveEvent(QMouseEvent *e)
+{
+
+}
+
+void Painter::paintEvent(QPaintEvent *e)
+{
+    QPainter p(this);
+    if(!pixmap->isNull())
+    {
+        p.drawPixmap((*rect), (*pixmap));
+    }
 }

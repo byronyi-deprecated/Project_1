@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <Qsize>
 #include <QInputDialog>
+#include <QRect>
 
 class Painter : public QWidget
 {
@@ -20,15 +21,20 @@ public:
     bool writeFile(QString fileName);
     QColor curFColor() const {return foregroundColor;}
     QColor curBColor() const {return backgroundColor;}
+    QSize curSize() const
+        {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
+    double curZoomFactor() const {return zoomFactor;}
     void setFColor(QColor curColor) {foregroundColor = curColor;}
     void setBColor(QColor curColor) {backgroundColor = curColor;}
+    bool setSize();
+    void setZoomFactor(int z)
+        {if(z < 0) zoomFactor = 0; else zoomFactor = z;}
     bool isNull;
 public slots:
     void zoomIn();
     void zoomOut();
     void unDo();
     void reDo();
-    bool setSize();
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);
@@ -38,9 +44,11 @@ private:
 
 
     enum toolState {null, pen, line, eraser, rectangle};
+    QRect *rect;
     QPixmap *pixmap;
     QColor foregroundColor;
     QColor backgroundColor;
+    double zoomFactor;
 };
 
 #endif // PAINTER_H

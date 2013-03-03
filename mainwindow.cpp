@@ -107,12 +107,12 @@ void MainWindow::resize()
 //left to do
 void MainWindow::zoomIn()
 {
-
+    painter->zoomIn();
 }
 //left to do
 void MainWindow::zoomOut()
 {
-
+    painter->zoomOut();
 }
 
 void MainWindow::changeFColor()

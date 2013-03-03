@@ -107,12 +107,14 @@ void MainWindow::resize()
 //left to do
 void MainWindow::zoomIn()
 {
-    painter->zoomIn();
+    double zoomFactor = painter->curZoomFactor() * 1.25;
+    painter->setZoomFactor(zoomFactor);
 }
 //left to do
 void MainWindow::zoomOut()
 {
-    painter->zoomOut();
+    double zoomFactor = painter->curZoomFactor() * 0.8;
+    painter->setZoomFactor(zoomFactor);
 }
 
 void MainWindow::changeFColor()

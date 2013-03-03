@@ -27,12 +27,9 @@ public:
     void setFColor(QColor curColor) {foregroundColor = curColor;}
     void setBColor(QColor curColor) {backgroundColor = curColor;}
     bool setSize();
-    void setZoomFactor(int z)
-        {if(z < 0) zoomFactor = 0; else zoomFactor = z;}
+    void setZoomFactor(double z);
     bool isNull;
 public slots:
-    void zoomIn();
-    void zoomOut();
     void unDo();
     void reDo();
 protected:

@@ -51,16 +51,9 @@ void Painter::reDo()
 
 }
 
-void Painter::zoomIn()
+void Painter::setZoomFactor(double z)
 {
-    zoomFactor *= 1.25;
-    rect->setSize(pixmap->size() * zoomFactor);
-    update();
-}
-
-void Painter::zoomOut()
-{
-    zoomFactor *= 0.8;
+    if(z < 0) zoomFactor = 0.001; else zoomFactor = z;
     rect->setSize(pixmap->size() * zoomFactor);
     update();
 }

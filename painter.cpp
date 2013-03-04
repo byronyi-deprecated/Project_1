@@ -12,13 +12,12 @@ Painter::Painter(QWidget *parent) :
 void Painter::createPaintDevice()
 {
     pixmap = new QPixmap;
-    painter = new QPainter(this);
+    painter = new QPainter;
     paintRect = new QRect(this->pos(), QSize(0, 0));
 
     brush = new QBrush;
     p = new QPen;
-    p->setBrush(brush);
-    painter->setPen(p);
+    p->setBrush(*brush);
 
     paintActions.clear();
     reDoActions.clear();
@@ -49,10 +48,9 @@ bool Painter::writeFile(QString fileName)
 {
     QPainter savePainter(pixmap);
     zoomFactor = 1.0;
-    for(QVector::iterator i = paintActions.begin();
-        i != paintActions.end(); ++i)
+    for(int i = 0; i < paintActions.count(); i++)
     {
-        i->play(savePainter);
+        paintActions[i].play(&savePainter);
     }
     return pixmap->save(fileName);
 }
@@ -104,9 +102,6 @@ void Painter::mousePressEvent(QMouseEvent *e)
     case pen:
         if(e->button() == Qt::LeftButton)
         {
-
-            painter->drawPoint(e->pos() / zoomFactor);
-            update();
         }
         if(e->button() == Qt::RightButton)
         {
@@ -115,7 +110,6 @@ void Painter::mousePressEvent(QMouseEvent *e)
      case line:
         if(e->button() == Qt::LeftButton)
         {
-            p.setBrush();
         }
     }
 }
@@ -135,11 +129,13 @@ void Painter::paintEvent(QPaintEvent * /* e */)
 {
     if(!pixmap->isNull())
     {
+        painter->begin(this);
+        painter->setPen(*p);
         painter->drawPixmap((*paintRect), (*pixmap));
-        for(QVector::iterator i = paintActions.begin();
-            i != paintActions.end(); ++i)
+        for(int i = 0; i < paintActions.count(); i++)
         {
-            i->play(painter);
+            paintActions[i].play(painter);
         }
+        painter->end();
     }
 }

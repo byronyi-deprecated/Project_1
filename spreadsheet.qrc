@@ -1,9 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>images/bcolor_icon.bmp</file>
+        <file>images/bitmap.bmp</file>
         <file>images/clearall_icon.bmp</file>
         <file>images/eraser_icon.bmp</file>
         <file>images/fcolor_icon.bmp</file>
+        <file>images/icon.jpg</file>
         <file>images/line_icon.bmp</file>
         <file>images/new_icon.bmp</file>
         <file>images/open_icon.bmp</file>
@@ -13,6 +15,5 @@
         <file>images/resize_icon.bmp</file>
         <file>images/save_icon.bmp</file>
         <file>images/undo_icon.bmp</file>
-        <file>images/icon.jpg</file>
     </qresource>
 </RCC>

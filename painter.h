@@ -6,10 +6,11 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <Qsize>
+#include <QSize>
 #include <QInputDialog>
 #include <QRect>
 #include <QErrorMessage>
+#include <QPicture>
 
 class Painter : public QWidget
 {
@@ -21,7 +22,7 @@ public:
     bool writeFile(QString fileName);
     int curXPos() const {return cursorPos.x();}
     int curYPos() const {return cursorPos.y();}
-//    QColor curFColor() const {return foregroundColor;}
+    QColor curFColor() const {return brush->color();}
     QColor curBColor() const {return backgroundColor;}
     QSize curSize() const
         {if(!pixmap) return QSize(0, 0); else return pixmap->size();}

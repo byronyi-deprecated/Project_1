@@ -189,7 +189,6 @@ void MainWindow::createActions()
     }
 
     exitAction = new QAction(tr("&Exit"), this);
-    exitAction->setShortcut(QKeySequence::Quit);
     exitAction->setStatusTip(tr("Exit the application"));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 

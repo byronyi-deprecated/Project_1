@@ -5,6 +5,11 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSlider>
+#include <QSpinBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
 
 class EraserDialog : public QDialog
 {
@@ -13,9 +18,19 @@ public:
     explicit EraserDialog(QWidget *parent = 0);
     
 signals:
-    
-public slots:
-    
+    void eraserSize(int );
+private slots:
+    void applySettings();
+private:
+    QHBoxLayout *topLayout;
+    QHBoxLayout *bottomLayout;
+    QVBoxLayout *mainLayout;
+
+    QSlider *slider;
+    QSpinBox *spinBox;
+    QLabel *label;
+    QPushButton *yes;
+    QPushButton *no;
 };
 
 #endif // ERASERDIALOG_H

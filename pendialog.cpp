@@ -1,37 +1,21 @@
 #include "pendialog.h"
 #include <QtGui>
 
-PenDialog::PenDialog(int &curWidth,
-                     Qt::PenCapStyle &curCapStyle,
-                     QWidget *parent) :
+PenDialog::PenDialog(QWidget *parent) :
     QDialog(parent)
 {
-    yes = new QPushButton(tr("&Yes"), this);
-    apply = new QPushButton(tr("&Apply"), this);
-    no = new QPushButton(tr("&No"), this);
-    no->setDefault(true);
-    apply->setDisabled(true);
-    connect(this, SIGNAL(capStyleChanged(bool)),
-            apply, SLOT(setEnabled(bool)));
-    connect(this, SIGNAL(widthChanged(bool)),
-            apply, SLOT(setEnabled(bool)));
-    connect(apply, SIGNAL(clicked()),
-            this, SLOT(applySettings()));
-
     label = new QLabel(tr("Pen &width"));
-    width = new QSlider(Qt::Horizontal, this);
+    slider = new QSlider(Qt::Horizontal, this);
     spinBox = new QSpinBox(this);
-    label->setBuddy(width);
+    label->setBuddy(slider);
 
-    width->setRange(0, 40);
+    slider->setRange(0, 40);
     spinBox->setRange(0, 40);
 
     connect(spinBox, SIGNAL(valueChanged(int)),
-            width, SLOT(setValue(int)));
-    connect(width, SIGNAL(valueChanged(int)),
+            slider, SLOT(setValue(int)));
+    connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
-
-    spinBox->setValue(curWidth);
 
     groupBox = new QGroupBox(tr("Cap style"));
     flatCap = new QRadioButton(tr("Flat cap"));
@@ -39,25 +23,48 @@ PenDialog::PenDialog(int &curWidth,
     roundCap = new QRadioButton(tr("Round cap"));
 
     buttonGroup = new QButtonGroup;
-    buttonGroup->addButton(flatCap);
-    buttonGroup->addButton(squareCap);
-    buttonGroup->addButton(roundCap);
+    buttonGroup->addButton(flatCap, 1);
+    buttonGroup->addButton(squareCap, 2);
+    buttonGroup->addButton(roundCap, 3);
     buttonGroup->setExclusive(true);
-    styleToButton(curCapStyle)->setChecked(true);
 
-    vbox = new QVBoxLayout;
-    vbox->addWidget(flatCap);
-    vbox->addWidget(squareCap);
-    vbox->addWidget(roundCap);
-    vbox->addStretch(1);
-    groupBox->setLayout(vbox);
+    yes = new QPushButton(tr("&Yes"), this);
+    no = new QPushButton(tr("&No"), this);
+    no->setDefault(true);
+    connect(yes, SIGNAL(clicked()),
+            this, SLOT(applySettings()));
+    connect(no, SIGNAL(clicked()),
+            this, SLOT(close()));
+
+    topLeftLayout = new QVBoxLayout;
+    topLeftLayout->addWidget(flatCap);
+    topLeftLayout->addWidget(squareCap);
+    topLeftLayout->addWidget(roundCap);
+    topLeftLayout->addStretch(1);
+    groupBox->setLayout(topLeftLayout);
+
+    topLayout = new QHBoxLayout;
+    topLayout->addLayout(topLeftLayout);
+    topLayout->addWidget(yes);
+    topLayout->addWidget(no);
+
+    bottomLayout = new QHBoxLayout;
+    bottomLayout->addWidget(slider);
+    bottomLayout->addWidget(label);
+    bottomLayout->addWidget(spinBox);
+
+    mainLayout = new QVBoxLayout;
+    mainLayout->addLayout(topLayout);
+    mainLayout->addLayout(bottomLayout);
+
+    this->setLayout(mainLayout);
 }
 
-void PenDialog::applySettings(int &curWidth,
-                              Qt::PenCapStyle &curCapStyle)
+void PenDialog::applySettings()
 {
-    curWidth = spinBox->value();
-    curCapStyle = buttonToStyle(buttonGroup->checkedButton());
+    emit penWidth(spinBox->value());
+    emit penCapStyle(buttonToStyle());
+    this->close();
 }
 
 QRadioButton* PenDialog::styleToButton(Qt::PenCapStyle s)
@@ -67,20 +74,15 @@ QRadioButton* PenDialog::styleToButton(Qt::PenCapStyle s)
         return flatCap;
     case Qt::SquareCap:
         return squareCap;
-    case Qt::RoundCap:
-        return roundCap;
-    default: return 0;
+    default: return roundCap;
     }
 }
 
-Qt::PenCapStyle PenDialog::buttonToStyle(QAbstractButton *b)
+Qt::PenCapStyle PenDialog::buttonToStyle()
 {
-    QRadioButton *temp = dynamic_cast<QRadioButton*>(b);
-    if(temp == flatCap)
-        return Qt::FlatCap;
-    else if (temp == squareCap)
-        return Qt::SquareCap;
-    else if (temp == roundCap)
-        return Qt::RoundCap;
-    return Qt::FlatCap;
+  switch(buttonGroup->checkedId()){
+    case 1: return Qt::FlatCap;
+    case 2: return Qt::SquareCap;
+    default: return Qt::RoundCap;
+    }
 }

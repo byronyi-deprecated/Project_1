@@ -2,6 +2,11 @@
 #define MAINWINDOW_H
 
 #include "painter.h"
+#include "pendialog.h"
+#include "linedialog.h"
+#include "rectdialog.h"
+#include "eraserdialog.h"
+
 #include <QMainWindow>
 #include <QLabel>
 #include <QAction>
@@ -45,12 +50,17 @@ private slots:
     void changeBColor();
     void aboutQt();
     void updateStatusBar();
+    void penSettings();
+    void lineSettings();
+    void rectSettings();
+    void eraserSettings();
 
 private:
     void createActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
+    void createRightButtonSettings();
     void setSize(QSize &);
     void readSettings();
     void writeSettings();
@@ -107,6 +117,11 @@ private:
     QAction *setLine;
     QAction *setEraser;
     QAction *setRect;
+
+    PenDialog *penDialog;
+    LineDialog *lineDialog;
+    RectDialog *rectDialog;
+    eraserDialog *eraserDialog;
 };
 
 #endif // MAINWINDOW_H

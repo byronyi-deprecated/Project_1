@@ -114,11 +114,20 @@ void Painter::mousePressEvent(QMouseEvent *e)
     }
     if(e->button() == Qt::RightButton)
     {
+        penDialog = new PenDialog;
         switch(tool) {
         case pen:
+            emit penSettings();
+            break;
         case line:
+            emit lineSettings();
+            break;
         case rect:
+            emit rectSettings();
+            break;
         case eraser:
+            emit eraserSettings();
+            break;
         default: break;
         }
     }

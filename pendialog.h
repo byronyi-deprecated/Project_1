@@ -15,35 +15,33 @@ class PenDialog : public QDialog
 {
     Q_OBJECT
 public:
-    PenDialog(int &curWidth,
-              Qt::PenCapStyle &curCapStyle,
-              QWidget *parent = 0);
-
+    PenDialog(QWidget *parent = 0);
 signals:
-    void capStyleChanged(bool);
-    void widthChanged(bool);
-    
+    void penWidth(int);
+    void penCapStyle(Qt::PenCapStyle);
 private slots:
-    void applySettings(int &curWidth,
-                       Qt::PenCapStyle &curCapStyle);
+    void applySettings();
 private:
     QRadioButton* styleToButton(Qt::PenCapStyle );
-    Qt::PenCapStyle buttonToStyle(QAbstractButton* );
-    QPushButton *yes;
-    QPushButton *apply;
-    QPushButton *no;
+    Qt::PenCapStyle buttonToStyle();
 
-    QSlider *width;
-    QSpinBox *spinBox;
-    QLabel *label;
-
-    Qt::PenCapStyle capStyle;
     QGroupBox *groupBox;
     QRadioButton *flatCap;
     QRadioButton *squareCap;
     QRadioButton *roundCap;
     QButtonGroup *buttonGroup;
-    QVBoxLayout *vbox;
+    QVBoxLayout *topLeftLayout;
+
+    QPushButton *yes;
+    QPushButton *no;
+    QHBoxLayout *topLayout;
+
+    QSlider *slider;
+    QSpinBox *spinBox;
+    QLabel *label;
+    QHBoxLayout *bottomLayout;
+
+    QVBoxLayout *mainLayout;
 };
 
 #endif // PENDIALOG_H

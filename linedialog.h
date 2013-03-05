@@ -10,7 +10,10 @@ public:
     explicit LineDialog(QWidget *parent = 0);
     
 signals:
-    
+    void lineStyle(Qt::PenStyle);
+    void lineCapStyle(Qt::PenCapStyle);
+    void polyLineEnabled(bool);
+    void lineWidth(int);
 public slots:
     
 };

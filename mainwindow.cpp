@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     createToolBars();
     createMenus();
     createStatusBar();
+    createRightButtonSettings();
 
     readSettings();
 
@@ -353,6 +354,18 @@ void MainWindow::createStatusBar()
     updateStatusBar();
 }
 
+void MainWindow::createRightButtonSettings()
+{
+    connect(painter, SIGNAL(penSettings()),
+            this, SLOT(penSettings()));
+    connect(painter, SIGNAL(lineSettings()),
+            this, SLOT(lineSettings()));
+    connect(painter, SIGNAL(rectSettings()),
+            this, SLOT(rectSettings()));
+    connect(painter, SIGNAL(eraserSettings()),
+            this, SLOT(eraserSettings()));
+}
+
 void MainWindow::updateStatusBar()
 {
     QString pos = tr("Cursor location: ");
@@ -462,4 +475,74 @@ void MainWindow::updateRecentFileActions()
 QString MainWindow::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
+}
+
+void MainWindow::penSettings()
+{
+    if(!penDialog)
+    {
+        penDialog = new PenDialog(this);
+        connect(penDialog, SIGNAL(penWidth(int)),
+                painter, SLOT(setPenWidth(int)));
+        connect(penDialog, SIGNAL(penCapStyle(Qt::PenCapStyle)),
+                painter, SLOT(setPenCapStyle(Qt::PenCapStyle)));
+    }
+    penDialog->show();
+    penDialog->raise();
+    penDialog->activateWindow();
+}
+
+void MainWindow::lineSettings()
+{
+    if(!lineDialog)
+    {
+        lineDialog = new LineDialog(this);
+        connect(lineDialog, SIGNAL(lineStyle(Qt::PenStyle)),
+                painter, SLOT(setLineStyle(Qt::PenStyle)));
+        connect(lineDialog, SIGNAL(lineCapStyle(Qt::PenCapStyle)),
+                painter, SLOT(setLineCapStyle(Qt::PenCapStyle)));
+        connect(lineDialog, SLOT(polyLineEnabled(bool)),
+                painter, SLOT(setPolyLineEnabled(bool)));
+        connect(lineDialog, SLOT(lineWidth(int)),
+                painter, SLOT(setLineWidth(int)));
+    }
+    lineDialog->show();
+    lineDialog->raise();
+    lineDialog->activateWindow();
+}
+
+void MainWindow::rectSettings()
+{
+    if(!rectDialog)
+    {
+        rectDialog = new rectDialog(this);
+        connect(rectDialog, SIGNAL(drawType(int )),
+                painter, SLOT(setDrawType(int)));
+        connect(rectDialog, SIGNAL(fillStyle(Qt::BrushStyle)),
+                painter, SLOT(setFillStyle(Qt::BrushStyle)));
+        connect(rectDialog, SIGNAL(boundaryStyle(Qt::PenStyle)),
+                painter, SLOT(setBoundaryStyle(Qt::PenStyle)));
+        connect(rectDialog, SIGNAL(boundaryJoinStyle(Qt::PenJoinStyle)),
+                painter, SLOT(setBoundaryJoinStyle(Qt::PenJoinStyle)));
+        connect(rectDialog, SIGNAL(fillColor(bool)),
+                painter, SLOT(setFillColor(bool)));
+        connect(rectDialog, SIGNAL(boundaryWidth(int)),
+                painter, SLOT(setBoundaryWidth(int)));
+    }
+    rectDialog->show();
+    rectDialog->raise();
+    rectDialog->activateWindow();
+}
+
+void MainWindow::eraserSettings()
+{
+    if(!eraserDialog)
+    {
+        eraserDialog = new EraserDialog(this);
+        connect(eraserDialog, SIGNAL(eraserSize(int)),
+                painter, SLOT(setEraserSize()));
+    }
+    eraserDialog->show();
+    eraserDialog->raise();
+    eraserDialog->activateWindow();
 }

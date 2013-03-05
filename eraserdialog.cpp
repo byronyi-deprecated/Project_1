@@ -34,7 +34,7 @@ EraserDialog::EraserDialog(QWidget *parent) :
     mainLayout->addLayout(bottomLayout);
 
     setLayout(mainLayout);
-    setWindowTitle(tr("Eraser settings");
+    setWindowTitle(tr("Eraser settings"));
     setFixedSize(sizeHint());
 }
 

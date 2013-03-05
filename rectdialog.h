@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QLayout>
+#include <QPushButton>
 
 class RectDialog : public QDialog
 {

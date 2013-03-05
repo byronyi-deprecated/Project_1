@@ -17,15 +17,15 @@ PenDialog::PenDialog(QWidget *parent) :
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
 
-    groupBox = new QGroupBox(tr("Cap style"));
-    flatCap = new QRadioButton(tr("Flat cap"));
-    squareCap = new QRadioButton(tr("Square cap"));
-    roundCap = new QRadioButton(tr("Round cap"));
+    capstyle = new QGroupBox(tr("Cap style"));
+    flat = new QRadioButton(tr("Flat cap"));
+    square = new QRadioButton(tr("Square cap"));
+    round = new QRadioButton(tr("Round cap"));
 
     buttonGroup = new QButtonGroup;
-    buttonGroup->addButton(flatCap, 1);
-    buttonGroup->addButton(squareCap, 2);
-    buttonGroup->addButton(roundCap, 3);
+    buttonGroup->addButton(flat, 1);
+    buttonGroup->addButton(square, 2);
+    buttonGroup->addButton(round, 3);
     buttonGroup->setExclusive(true);
 
     yes = new QPushButton(tr("&Yes"), this);
@@ -37,11 +37,11 @@ PenDialog::PenDialog(QWidget *parent) :
             this, SLOT(close()));
 
     topLeftLayout = new QVBoxLayout;
-    topLeftLayout->addWidget(flatCap);
-    topLeftLayout->addWidget(squareCap);
-    topLeftLayout->addWidget(roundCap);
+    topLeftLayout->addWidget(flat);
+    topLeftLayout->addWidget(square);
+    topLeftLayout->addWidget(round);
     topLeftLayout->addStretch(1);
-    groupBox->setLayout(topLeftLayout);
+    capstyle->setLayout(topLeftLayout);
 
     topLayout = new QHBoxLayout;
     topLayout->addLayout(topLeftLayout);
@@ -57,32 +57,14 @@ PenDialog::PenDialog(QWidget *parent) :
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(bottomLayout);
 
-    this->setLayout(mainLayout);
+    setLayout(mainLayout);
+    setWindowTitle(tr("Pen Settings"));
+    setFixedSize(sizeHint());
 }
 
 void PenDialog::applySettings()
 {
     emit penWidth(spinBox->value());
-    emit penCapStyle(buttonToStyle());
-    this->close();
-}
-
-QRadioButton* PenDialog::styleToButton(Qt::PenCapStyle s)
-{
-    switch(s){
-    case Qt::FlatCap:
-        return flatCap;
-    case Qt::SquareCap:
-        return squareCap;
-    default: return roundCap;
-    }
-}
-
-Qt::PenCapStyle PenDialog::buttonToStyle()
-{
-  switch(buttonGroup->checkedId()){
-    case 1: return Qt::FlatCap;
-    case 2: return Qt::SquareCap;
-    default: return Qt::RoundCap;
-    }
+    emit penCapStyle(static_cast<Qt::PenCapStyle>(buttonGroup->checkedId()));
+    close();
 }

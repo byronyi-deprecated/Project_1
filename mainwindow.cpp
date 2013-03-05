@@ -515,7 +515,7 @@ void MainWindow::rectSettings()
 {
     if(!rectDialog)
     {
-        rectDialog = new rectDialog(this);
+        rectDialog = new RectDialog(this);
         connect(rectDialog, SIGNAL(drawType(int )),
                 painter, SLOT(setDrawType(int)));
         connect(rectDialog, SIGNAL(fillStyle(Qt::BrushStyle)),

@@ -25,10 +25,10 @@ private:
     QRadioButton* styleToButton(Qt::PenCapStyle );
     Qt::PenCapStyle buttonToStyle();
 
-    QGroupBox *groupBox;
-    QRadioButton *flatCap;
-    QRadioButton *squareCap;
-    QRadioButton *roundCap;
+    QGroupBox *capstyle;
+    QRadioButton *flat;
+    QRadioButton *square;
+    QRadioButton *round;
     QButtonGroup *buttonGroup;
     QVBoxLayout *topLeftLayout;
 

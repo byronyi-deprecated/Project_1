@@ -121,7 +121,7 @@ private:
     PenDialog *penDialog;
     LineDialog *lineDialog;
     RectDialog *rectDialog;
-    eraserDialog *eraserDialog;
+    EraserDialog *eraserDialog;
 };
 
 #endif // MAINWINDOW_H

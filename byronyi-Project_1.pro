@@ -18,12 +18,7 @@ SOURCES += main.cpp\
     pendialog.cpp \
     linedialog.cpp \
     rectdialog.cpp \
-    eraserdialog.cpp \
-    painttool.cpp \
-    pen.cpp \
-    line.cpp \
-    rect.cpp \
-    eraser.cpp
+    eraserdialog.cpp
 
 RESOURCES = spreadsheet.qrc
 
@@ -32,9 +27,4 @@ HEADERS  += mainwindow.h \
     pendialog.h \
     linedialog.h \
     rectdialog.h \
-    eraserdialog.h \
-    painttool.h \
-    pen.h \
-    line.h \
-    rect.h \
-    eraser.h
+    eraserdialog.h

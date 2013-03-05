@@ -54,11 +54,11 @@ void RectDialog::createDrawType()
     circle = new QRadioButton(tr("Circle"));
     ellipse = new QRadioButton(tr("Ellipse"));
 
-    drawtype = new QButtonGroup(tr("Draw Type"));
-    drawtype->addButton(rectangle);
-    drawtype->addButton(roundRect);
-    drawtype->addButton(circle);
-    drawtype->addButton(ellipse);
+    drawtype = new QButtonGroup;//(tr("Draw Type"));
+    drawtype->addButton(rectangle, 1);
+    drawtype->addButton(roundRect, 2);
+    drawtype->addButton(circle, 3);
+    drawtype->addButton(ellipse, 4);
     drawtype->setExclusive(true);
 
     drawLayout = new QHBoxLayout;
@@ -86,26 +86,26 @@ void RectDialog::createFillStyle()
     cDiag = new QRadioButton(tr("C. Diag"));
     nopattern = new QRadioButton(tr("No Pattern"));
 
-    fillstyle = new ButtonGroup(tr("Fill Style"));
-    fillstyle->addButton(solid);
-    fillstyle->addButton(dense1);
-    fillstyle->addButton(dense2);
-    fillstyle->addButton(dense3);
-    fillstyle->addButton(dense4);
-    fillstyle->addButton(dense4);
-    fillstyle->addButton(dense5);
-    fillstyle->addButton(dense6);
-    fillstyle->addButton(dense7);
-    fillstyle->addButton(horizontal);
-    fillstyle->addButton(vertical);
-    fillstyle->addButton(cross);
-    fillstyle->addButton(bDiag);
-    fillstyle->addButton(fDiag);
-    fillstyle->addButton(cDiag);
-    fillstyle->addButton(nopattern);
+    fillstyle = new QButtonGroup;//(tr("Fill Style"));
+    fillstyle->addButton(solid, 1);
+    fillstyle->addButton(dense1, 2);
+    fillstyle->addButton(dense2, 3);
+    fillstyle->addButton(dense3, 4);
+    fillstyle->addButton(dense4, 5);
+    fillstyle->addButton(dense4, 6);
+    fillstyle->addButton(dense5, 7);
+    fillstyle->addButton(dense6, 8);
+    fillstyle->addButton(dense7, 8);
+    fillstyle->addButton(horizontal, 9);
+    fillstyle->addButton(vertical, 10);
+    fillstyle->addButton(cross, 11);
+    fillstyle->addButton(bDiag, 12);
+    fillstyle->addButton(fDiag, 13);
+    fillstyle->addButton(cDiag, 14);
+    fillstyle->addButton(nopattern, 0);
     fillstyle->setExclusive(true);
 
-    fillLayout = new QBoxLayout;
+    fillLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     fillLayout->addWidget(solid);
     fillLayout->addWidget(dense1);
     fillLayout->addWidget(dense2);
@@ -132,16 +132,16 @@ void RectDialog::createBDStyle()
     dadodo = new QRadioButton(tr("Dash Dot Dot Line"));
     noline = new QRadioButton(tr("No Line"));
 
-    bdstyle = new QButtonGroup(tr("Boundary Style"));
-    fillstyle->addButton(solidline);
-    fillstyle->addButton(dash);
-    fillstyle->addButton(dot);
-    fillstyle->addButton(dado);
-    fillstyle->addButton(dadodo);
-    fillstyle->addButton(noline);
-    fillstyle->setExclusive(true);
+    bdstyle = new QButtonGroup;//(tr("Boundary Style"));
+    bdstyle->addButton(solidline, 1);
+    bdstyle->addButton(dash, 2);
+    bdstyle->addButton(dot, 3);
+    bdstyle->addButton(dado, 4);
+    bdstyle->addButton(dadodo, 5);
+    bdstyle->addButton(noline, 0);
+    bdstyle->setExclusive(true);
 
-    BDLayout = new QBoxLayout;
+    BDLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     BDLayout->addWidget(solidline);
     BDLayout->addWidget(dash);
     BDLayout->addWidget(dot);
@@ -156,10 +156,10 @@ void RectDialog::createBDJoinStyle()
     bevel = new QRadioButton(tr("Bevel Join"));
     round = new QRadioButton(tr("Round Join"));
 
-    bdjoinstyle = new QButtonGroup(tr("Boundary Join Style"));
-    bdjoinstyle->addButton(miter);
-    bdjoinstyle->addButton(bevel);
-    bdjoinstyle->addButton(round);
+    bdjoinstyle = new QButtonGroup;//(tr("Boundary Join Style"));
+    bdjoinstyle->addButton(miter, 0x00);
+    bdjoinstyle->addButton(bevel, 0x40);
+    bdjoinstyle->addButton(round, 0x80);
     bdjoinstyle->setExclusive(true);
 
     BDJoinLayout = new QHBoxLayout;
@@ -173,9 +173,9 @@ void RectDialog::createFillColor()
     fground = new QRadioButton(tr("Foreground"));
     bground = new QRadioButton(tr("Background"));
 
-    fillcolor = new QButtonGroup(tr("Fill Color"));
-    fillcolor->addButton(fground);
-    fillcolor->addButton(bground);
+    fillcolor = new QButtonGroup;//(tr("Fill Color"));
+    fillcolor->addButton(fground, 1);
+    fillcolor->addButton(bground, 1);
     fillcolor->setExclusive(true);
 
     colorLayout = new QVBoxLayout;
@@ -185,5 +185,11 @@ void RectDialog::createFillColor()
 
 void RectDialog::applySettings()
 {
-
+    emit drawType(drawtype->checkedId());
+    emit fillStyle(static_cast<Qt::BrushStyle>(fillstyle->checkedId()));
+    emit boundaryStyle(static_cast<Qt::PenStyle>(bdstyle->checkedId()));
+    emit boundaryJoinStyle(static_cast<Qt::PenJoinStyle>(bdjoinstyle->checkedId()));
+    emit fillColor(fground->isChecked());
+    emit boundaryWidth(spinBox->value());
+    close();
 }

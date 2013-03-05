@@ -46,29 +46,18 @@ PenDialog::PenDialog(int &curWidth,
     styleToButton(curCapStyle)->setChecked(true);
 
     vbox = new QVBoxLayout;
-    vbox->addWidget(buttonGroup);
+    vbox->addWidget(flatCap);
+    vbox->addWidget(squareCap);
+    vbox->addWidget(roundCap);
     vbox->addStretch(1);
     groupBox->setLayout(vbox);
 }
 
-void PenDialog::applySettings()
+void PenDialog::applySettings(int &curWidth,
+                              Qt::PenCapStyle &curCapStyle)
 {
-    if(!curWidth = spinBox->value())
-        emit widthChanged();
     curWidth = spinBox->value();
-
-    switch(buttonGroup->checkedButton()){
-    case flatCap:
-        curCapStyle = Qt::FlatCap;
-        break;
-    case squareCap:
-        curCapStyle = Qt::SquareCap;
-        break;
-    case roundCap:
-        curCapStyle = Qt::RoundCap;
-        break;
-    default: break;
-    }
+    curCapStyle = buttonToStyle(buttonGroup->checkedButton());
 }
 
 QRadioButton* PenDialog::styleToButton(Qt::PenCapStyle s)
@@ -80,19 +69,18 @@ QRadioButton* PenDialog::styleToButton(Qt::PenCapStyle s)
         return squareCap;
     case Qt::RoundCap:
         return roundCap;
-    default: break;
+    default: return 0;
     }
 }
 
-Qt::PenCapStyle PenDialog::buttonToStyle(QRadioButton *b)
+Qt::PenCapStyle PenDialog::buttonToStyle(QAbstractButton *b)
 {
-    switch(b){
-    case flatCap:
+    QRadioButton *temp = dynamic_cast<QRadioButton*>(b);
+    if(temp == flatCap)
         return Qt::FlatCap;
-    case squareCap:
+    else if (temp == squareCap)
         return Qt::SquareCap;
-    case roundCap:
+    else if (temp == roundCap)
         return Qt::RoundCap;
-    default: break;
-    }
+    return Qt::FlatCap;
 }

@@ -22,14 +22,13 @@ public:
 signals:
     void capStyleChanged(bool);
     void widthChanged(bool);
-    QPen p;
     
 private slots:
-    void applySettings();
-
+    void applySettings(int &curWidth,
+                       Qt::PenCapStyle &curCapStyle);
 private:
     QRadioButton* styleToButton(Qt::PenCapStyle );
-    Qt::PenCapStyle buttonToStyle(QRadioButton *);
+    Qt::PenCapStyle buttonToStyle(QAbstractButton* );
     QPushButton *yes;
     QPushButton *apply;
     QPushButton *no;

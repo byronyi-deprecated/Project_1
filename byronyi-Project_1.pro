@@ -14,9 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    painter.cpp
+    painter.cpp \
+    pendialog.cpp \
+    linedialog.cpp \
+    rectdialog.cpp \
+    eraserdialog.cpp
 
 RESOURCES = spreadsheet.qrc
 
 HEADERS  += mainwindow.h \
-    painter.h
+    painter.h \
+    pendialog.h \
+    linedialog.h \
+    rectdialog.h \
+    eraserdialog.h

@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     readSettings();
 
     setWindowIcon(QIcon(":/images/icon.jpg"));
+//    connect(painter, SIGNAL(imageModified(bool)),
+//            this, SLOT(setWindowModified(bool)));
     setCurrentFile("");
 }
 
@@ -33,9 +35,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::newFile()
 {
-    if(okToContinue())
+    if(okToContinue() && resize())
     {
-        resize();
         painter->clear();
         setCurrentFile("");
     }
@@ -100,7 +101,7 @@ void MainWindow::clearAll()
     if(r == QMessageBox::Cancel) return;
 }
 
-void MainWindow::resize()
+bool MainWindow::resize()
 {
     bool ok;
     int width = QInputDialog::getInt(this, tr("Painter"),
@@ -108,14 +109,15 @@ void MainWindow::resize()
                                             "(less than 1024)"),
                                      painter->curSize().width(), 0,
                                      1024, 1, &ok);
-    if(!ok) return;
+    if(!ok) return ok;
     int height = QInputDialog::getInt(this, tr("Painter"),
                                          tr("Please enter the height"
                                             "(less than 1024)"),
                                       painter->curSize().height(), 0,
                                       1024, 1, &ok);
-    if(!ok) return;
+    if(!ok) return ok;
     setWindowModified(painter->setSize(QSize(width, height)));
+    return ok;
 }
 
 void MainWindow::zoomIn()

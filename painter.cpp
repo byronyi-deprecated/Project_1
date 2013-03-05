@@ -7,6 +7,7 @@ Painter::Painter(QWidget *parent) :
     tool = null;
     createPaintDevice();
     this->setMouseTracking(true);
+    emit imageModified(false);
 }
 
 void Painter::createPaintDevice()
@@ -15,9 +16,10 @@ void Painter::createPaintDevice()
     painter = new QPainter;
     paintRect = new QRect(this->pos(), QSize(0, 0));
 
-    brush = new QBrush;
-    p = new QPen;
+    brush = new QBrush(Qt::black);
+    p = new QPen(Qt::black);
     p->setBrush(*brush);
+    setBColor(Qt::white);
 
     paintActions.clear();
     reDoActions.clear();
@@ -46,13 +48,16 @@ bool Painter::readFile(QString fileName)
 
 bool Painter::writeFile(QString fileName)
 {
-    QPainter savePainter(pixmap);
-    zoomFactor = 1.0;
+    QPixmap saveImage(*pixmap);
+    QPainter savePainter(&saveImage);
+    int tempZoomFactor(curZoomFactor());
+    setZoomFactor(1.0);
     for(int i = 0; i < paintActions.count(); i++)
     {
         paintActions[i].play(&savePainter);
     }
-    return pixmap->save(fileName);
+    setZoomFactor(tempZoomFactor);
+    return saveImage.save(fileName);
 }
 
 void Painter::unDo()
@@ -87,6 +92,7 @@ bool Painter::setSize(QSize size)
         pixmap->fill();
         paintActions.clear();
         reDoActions.clear();
+        emit imageModified(true);
     }
     *pixmap = pixmap->scaled(size);
     paintRect->setSize(size);
@@ -96,20 +102,24 @@ bool Painter::setSize(QSize size)
 //to be done
 void Painter::mousePressEvent(QMouseEvent *e)
 {
-    switch(tool) {
-    case null:
-        break;
-    case pen:
-        if(e->button() == Qt::LeftButton)
-        {
+    if(e->button() == Qt::LeftButton)
+    {
+        switch(tool) {
+        case pen:
+        case line:
+        case rect:
+        case eraser:
+        default: break;
         }
-        if(e->button() == Qt::RightButton)
-        {
-
-        }
-     case line:
-        if(e->button() == Qt::LeftButton)
-        {
+    }
+    if(e->button() == Qt::RightButton)
+    {
+        switch(tool) {
+        case pen:
+        case line:
+        case rect:
+        case eraser:
+        default: break;
         }
     }
 }
@@ -123,6 +133,16 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
 {
     cursorPos = e->pos();
     emit cursorChanged();
+    if(e->buttons() & Qt::LeftButton)
+    {
+        switch(tool) {
+        case pen:
+        case line:
+        case rect:
+        case eraser:
+        default: break;
+        }
+    }
 }
 
 void Painter::paintEvent(QPaintEvent * /* e */)

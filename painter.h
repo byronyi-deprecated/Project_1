@@ -42,6 +42,7 @@ public slots:
 signals:
     void cursorChanged();
     void zoomFactorChanged();
+    void imageModified(bool );
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);

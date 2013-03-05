@@ -38,7 +38,7 @@ private slots:
     void about();
     void openRecentFile();
     void clearAll();
-    void resize();
+    bool resize();
     void zoomIn();
     void zoomOut();
     void changeFColor();

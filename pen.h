@@ -7,7 +7,7 @@
 #include <QBrush>
 #include <QMouseEvent>
 
-class Pen : public QPainter, public QObject
+class Pen : public QObject, public QPainter
 {
     Q_OBJECT
 public:

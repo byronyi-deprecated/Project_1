@@ -12,7 +12,10 @@
 #include <QErrorMessage>
 #include <QPicture>
 
-#include "pendialog.h"
+#include "pen.h"
+#include "line.h"
+#include "rect.h"
+#include "eraser.h"
 
 class Painter : public QWidget
 {
@@ -24,23 +27,19 @@ public:
     bool writeFile(QString fileName);
     int curXPos() const {return cursorPos.x();}
     int curYPos() const {return cursorPos.y();}
-    QColor curFColor() const {return brush->color();}
-    QColor curBColor() const {return backgroundColor;}
     QSize curSize() const
         {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
     double curZoomFactor() const {return zoomFactor;}
-    void setFColor(QColor curColor) {brush->setColor(curColor);}
-    void setBColor(QColor curColor) {backgroundColor = curColor;}
-    bool setSize(QSize size);
-    void setZoomFactor(double z);
+    QColor curBColor() const {return backgroundColor;}
     bool isNull() {return pixmap->isNull();}
 public slots:
     void unDo();
     void reDo();
-    void isPen(bool toggled) {tool = toggled ? pen : tool;}
-    void isLine(bool toggled){tool = toggled ? line : tool;}
-    void isRect(bool toggled) {tool = toggled? rect : tool;}
-    void isEraser(bool toggled) {tool = toggled? eraser : tool;}
+    void setTool(int);
+    void setFColor(QColor);
+    void setBColor(QColor);
+    bool setSize(QSize size);
+    void setZoomFactor(double z);
 
     void setPenWidth(int );
     void setPenCapStyle(Qt::PenCapStyle );
@@ -62,6 +61,8 @@ signals:
     void cursorChanged();
     void zoomFactorChanged();
     void imageModified(bool );
+    void fColorChanged(QColor );
+    void bColorChanged(QColor );
     void penSettings();
     void lineSettings();
     void rectSettings();
@@ -73,18 +74,19 @@ protected:
     void paintEvent(QPaintEvent *);
 private:
     void createPaintDevice();
-    enum Tool {null, pen, line, rect, eraser} tool;
+    enum Tool {null, isPen, isLine, isRect, isEraser} tool;
     QRect *paintRect;
     QPoint cursorPos;
     QPixmap *pixmap;
     QVector<QPicture> paintActions;
     QVector<QPicture> reDoActions;
-    QColor backgroundColor;
     double zoomFactor;
-    QPainter *painter;
-    QPen *p;
-    QBrush *brush;
-    PenDialog *penDialog;
+
+    Pen *pen;
+    Line *line;
+    Rect *rect;
+    Eraser *eraser;
+    QColor backgroundColor;
 };
 
 #endif // PAINTER_H

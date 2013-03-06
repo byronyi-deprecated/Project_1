@@ -7,7 +7,7 @@
 #include <QSize>
 #include <QCursor>
 
-class Eraser : public QPainter, public QObject
+class Eraser : public QObject, public QPainter
 {
     Q_OBJECT
 public:

@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QActionGroup>
 #include <QColorDialog>
+#include <QToolButton>
 
 class MainWindow : public QMainWindow
 {
@@ -112,11 +113,11 @@ private:
     QAction *changeFColorAction;
     QAction *changeBColorAction;
 
-    QActionGroup *setPaintTool;
-    QAction *setPen;
-    QAction *setLine;
-    QAction *setEraser;
-    QAction *setRect;
+    QButtonGroup *setPaintTool;
+    QToolButton *setPen;
+    QToolButton *setLine;
+    QToolButton *setEraser;
+    QToolButton *setRect;
 };
 
 #endif // MAINWINDOW_H

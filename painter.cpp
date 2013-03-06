@@ -8,18 +8,13 @@ Painter::Painter(QWidget *parent) :
     createPaintDevice();
     this->setMouseTracking(true);
     emit imageModified(false);
+    backgroundColor = Qt::white;
 }
 
 void Painter::createPaintDevice()
 {
     pixmap = new QPixmap;
-    painter = new QPainter;
     paintRect = new QRect(this->pos(), QSize(0, 0));
-
-    brush = new QBrush(Qt::black);
-    p = new QPen(Qt::black);
-    p->setBrush(*brush);
-    setBColor(Qt::white);
 
     paintActions.clear();
     reDoActions.clear();
@@ -99,33 +94,47 @@ bool Painter::setSize(QSize size)
     update();
     return true;
 }
+
+void Painter::setFColor(QColor curColor)
+{
+    pen->setForegroundColor(curColor);
+    line->setForegroundColor(curColor);
+    rect->setForegroundColor(curColor);
+}
+
+void Painter::setBColor(QColor curColor)
+{
+    rect->setBackgroundColor(curColor);
+    eraser->setBackgroundColor(curColor);
+    backgroundColor = curColor;
+}
+
 //to be done
 void Painter::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
     {
         switch(tool) {
-        case pen:
-        case line:
-        case rect:
-        case eraser:
+        case isPen:
+        case isLine:
+        case isRect:
+        case isEraser:
         default: break;
         }
     }
     if(e->button() == Qt::RightButton)
     {
-        penDialog = new PenDialog;
         switch(tool) {
-        case pen:
+        case isPen:
             emit penSettings();
             break;
-        case line:
+        case isLine:
             emit lineSettings();
             break;
-        case rect:
+        case isRect:
             emit rectSettings();
             break;
-        case eraser:
+        case isEraser:
             emit eraserSettings();
             break;
         default: break;
@@ -145,10 +154,10 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
     if(e->buttons() & Qt::LeftButton)
     {
         switch(tool) {
-        case pen:
-        case line:
-        case rect:
-        case eraser:
+        case isPen:
+        case isLine:
+        case isRect:
+        case isEraser:
         default: break;
         }
     }
@@ -158,15 +167,26 @@ void Painter::paintEvent(QPaintEvent * /* e */)
 {
     if(!pixmap->isNull())
     {
-        painter->begin(this);
-        painter->setPen(*p);
-        painter->drawPixmap((*paintRect), (*pixmap));
+        QPainter painter;
+        painter.begin(this);
+        painter.drawPixmap((*paintRect), (*pixmap));
         for(int i = 0; i < paintActions.count(); i++)
         {
-            paintActions[i].play(painter);
+            paintActions[i].play(&painter);
         }
-        painter->end();
+        painter.end();
     }
+}
+
+void Painter::setTool(int id)
+{
+    switch(id){
+    case 1: tool = isPen; break;
+    case 2: tool = isLine; break;
+    case 3: tool = isRect; break;
+    case 4: tool = isEraser; break;
+    default: tool = tool; break;
+}
 }
 
 void Painter::setPenWidth(int ){}

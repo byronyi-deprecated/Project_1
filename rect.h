@@ -6,7 +6,7 @@
 #include <QBrush>
 #include <QMouseEvent>
 
-class Rect : public QPainter, public QObject
+class Rect : public QObject, public QPainter
 {
     Q_OBJECT
 public:

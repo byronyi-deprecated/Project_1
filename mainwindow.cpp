@@ -135,14 +135,14 @@ void MainWindow::zoomOut()
 
 void MainWindow::changeFColor()
 {
-    painter->setFColor(QColorDialog::getColor(painter->curFColor(), this,
+    painter->setFColor(QColorDialog::getColor(Qt::black, this,
                                               tr("Choose the foreground color"),
                                               QColorDialog::ShowAlphaChannel));
 }
 
 void MainWindow::changeBColor()
 {
-    painter->setBColor(QColorDialog::getColor(painter->curBColor(), this,
+    painter->setBColor(QColorDialog::getColor(Qt::white, this,
                                               tr("Choose the background color"),
                                               QColorDialog::ShowAlphaChannel));
 }
@@ -255,35 +255,34 @@ void MainWindow::createActions()
     connect(changeBColorAction, SIGNAL(triggered()),
             this, SLOT(changeBColor()));
 
-    setPen = new QAction(QIcon(":/images/pen_icon.bmp"),
-                         tr(""), this);
+    setPen = new QToolButton;
+    setPen->setIcon(QIcon(":/images/pen_icon.bmp"));
     setPen->setStatusTip(tr("Pen"));
     setPen->setCheckable(true);
-    connect(setPen, SIGNAL(toggled(bool)), painter, SLOT(isPen(bool)));
 
-    setLine = new QAction(QIcon(":/images/line_icon.bmp"),
-                          tr(""), this);
+    setLine = new QToolButton;
+    setPen->setIcon(QIcon(":/images/line_icon.bmp"));
     setLine->setStatusTip(tr("Line"));
     setLine->setCheckable(true);
-    connect(setLine, SIGNAL(toggled(bool)), painter, SLOT(isLine(bool)));
 
-    setRect = new QAction(QIcon(":/images/rect_icon.bmp"),
-                          tr(""), this);
+    setRect = new QToolButton;
+    setPen->setIcon(QIcon(":/images/rect_icon.bmp"));
     setRect->setStatusTip(tr("Rectangle"));
     setRect->setCheckable(true);
-    connect(setRect, SIGNAL(toggled(bool)), painter, SLOT(isRect(bool)));
 
-    setEraser = new QAction(QIcon(":/images/eraser_icon.bmp"),
-                            tr(""), this);
+    setEraser = new QToolButton;
+    setPen->setIcon(QIcon(":/images/eraser_icon.bmp"));
     setEraser->setStatusTip(tr("Eraser"));
     setEraser->setCheckable(true);
-    connect(setEraser, SIGNAL(toggled(bool)), painter, SLOT(isEraser(bool)));
 
-    setPaintTool = new QActionGroup(this);
-    setPaintTool->addAction(setPen);
-    setPaintTool->addAction(setLine);
-    setPaintTool->addAction(setRect);
-    setPaintTool->addAction(setEraser);
+    setPaintTool = new QButtonGroup(this);
+    setPaintTool->addButton(setPen, 1);
+    setPaintTool->addButton(setLine, 2);
+    setPaintTool->addButton(setRect, 3);
+    setPaintTool->addButton(setEraser, 4);
+    setPaintTool->setExclusive(true);
+    connect(setPaintTool, SIGNAL(buttonClicked(int)),
+            painter, SLOT(setTool(int)));
 }
 
 void MainWindow::createMenus()
@@ -334,7 +333,10 @@ void MainWindow::createToolBars()
     toolBar->addAction(changeFColorAction);
     toolBar->addAction(changeBColorAction);
     toolBar->addSeparator();
-    toolBar->addActions(setPaintTool->actions());
+    toolBar->addWidget(setPen);
+    toolBar->addWidget(setLine);
+    toolBar->addWidget(setRect);
+    toolBar->addWidget(setEraser);
 }
 
 void MainWindow::createStatusBar()
@@ -520,7 +522,7 @@ void MainWindow::rectSettings()
       connect(&rectDialog, SIGNAL(boundaryWidth(int)),
               painter, SLOT(setBoundaryWidth(int)));
 
-//      rectDialog.exec();
+      rectDialog.exec();
 }
 
 void MainWindow::eraserSettings()

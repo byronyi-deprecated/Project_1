@@ -168,3 +168,20 @@ void Painter::paintEvent(QPaintEvent * /* e */)
         painter->end();
     }
 }
+
+void Painter::setPenWidth(int ){}
+void Painter::setPenCapStyle(Qt::PenCapStyle ){}
+
+void Painter::setLineStyle(Qt::PenStyle ){}
+void Painter::setLineCapStyle(Qt::PenCapStyle ){}
+void Painter::setPolyLineEnabled(bool ){}
+void Painter::setLineWidth(int ){}
+
+void Painter::setDrawType(int ){}
+void Painter::setFillStyle(Qt::BrushStyle ){}
+void Painter::setBoundaryStyle(Qt::PenStyle ){}
+void Painter::setBoundaryJoinStyle(Qt::PenJoinStyle ){}
+void Painter::setFillColor(bool foregroundColor){}
+void Painter::setBoundaryWidth(int ){}
+
+void Painter::setEraserSize(int ){}

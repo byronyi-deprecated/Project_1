@@ -1,34 +1,26 @@
 #include "eraser.h"
 
-Eraser::Eraser(QObject *parent) :
-    QPainter(parent)
+Eraser::Eraser(QPaintDevice *paintDevice) :
+    QPainter(paintDevice)
 {
-    backgroundColor = Qt::white;
-    size = QSize(1,1);
-    cursor = QPixmap(size);
+    cursor = QPixmap(QSize(1, 1));
     cursor.fill();
 }
 
-void Eraser::paintByPress(QPicture* p, QMouseEvent* e)
+void Eraser::paintByPress(QPoint p)
 {
-    p = new QPicture;
-    begin(p);
-    QRect rect(e->x() - size.width() / 2,
-               e->y() - size.height() / 2,
-               size.width(), size.height());
+    QRect rect(p.x() - cursor.width() / 2,
+               p.y() - cursor.height() / 2,
+               cursor.width(), cursor.height());
     drawPixmap(rect, cursor);
-    end();
 }
 
 void Eraser::setEraserSize(int s)
 {
-    size = QSize(s, s);
-    cursor = QPixmap(size);
-    cursor.fill(backgroundColor);
+    cursor.scaled(QSize(s, s));
 }
 
 void Eraser::setBackgroundColor(QColor c)
 {
-    backgroundColor = c;
-    cursor.fill(backgroundColor);
+    cursor.fill(c);
 }

@@ -7,21 +7,19 @@
 #include <QSize>
 #include <QCursor>
 
-class Eraser : public QPainter
+class Eraser : public QPainter, public QObject
 {
     Q_OBJECT
 public:
-    explicit Eraser(QObject *parent = 0);
+    explicit Eraser(QPaintDevice *paintDevice = 0);
     
 signals:
     
 public slots:
-    void paintByPress(QPicture*, QMouseEvent*);
+    void paintByPress(QPoint );
     void setEraserSize(int );
     void setBackgroundColor(QColor );
 private:
-    QColor backgroundColor;
-    QSize size;
     QPixmap cursor;
 };
 

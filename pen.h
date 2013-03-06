@@ -1,26 +1,28 @@
 #ifndef PEN_H
 #define PEN_H
 
+#include <QObject>
 #include <QPainter>
 #include <QPen>
 #include <QBrush>
 #include <QMouseEvent>
 
-class pen : public QPainter
+class Pen : public QPainter, public QObject
 {
     Q_OBJECT
 public:
-    explicit pen(QObject *parent = 0);
+    explicit Pen(QPaintDevice *paintDevice = 0);
     
 signals:
     
 public slots:
-    void paintByPress(QPicture*, QMouseEvent*);
+    void paintByPress(QPoint);
     void setPenWidth(int );
     void setPenCapStyle(Qt::PenCapStyle );
+    void setForegroundColor(QColor );
 private:
-    QPen *pen;
-    QBrush *brush;
+    QPen pen;
+    QBrush brush;
 };
 
 #endif // PEN_H

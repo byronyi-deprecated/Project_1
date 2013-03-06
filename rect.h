@@ -6,27 +6,31 @@
 #include <QBrush>
 #include <QMouseEvent>
 
-class Rect : public QPainter
+class Rect : public QPainter, public QObject
 {
     Q_OBJECT
 public:
-    explicit Rect(QObject *parent = 0);
+    explicit Rect(QPaintDevice *paintDevice = 0);
     
 signals:
     
 public slots:
-    void paintByPress(QPicture*, QMouseEvent*);
+    void paintByPress(QPoint start, QPoint end);
     void setDrawType(int );
     void setFillStyle(Qt::BrushStyle );
     void setBoundaryStyle(Qt::PenStyle );
     void setBoundaryJoinStyle(Qt::PenJoinStyle );
     void setFillColor(bool foregroundColor);
     void setBoundaryWidth(int );
+    void setForegroundColor(QColor f) {pen.setColor(foregroundColor = f);}
+    void setBackgroundColor(QColor b) {backgroundColor = b;}
+
 private:
-    QPen *pen;
-    QBrush *brush;
-    QColor *foregroundColor;
-    QColor *backgroundColor;
+    QPen pen;
+    QBrush brush;
+    QColor foregroundColor;
+    QColor backgroundColor;
+    int drawType;
 };
 
 #endif // RECT_H

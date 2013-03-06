@@ -6,23 +6,22 @@
 #include <QBrush>
 #include <QMouseEvent>
 
-class Line : public QPainter
+class Line : public QPainter, public QObject
 {
     Q_OBJECT
 public:
-    explicit Line(QObject *parent = 0);
+    explicit Line(QPaintDevice *paintDevice = 0);
     
 signals:
     
 public slots:
-    void paintByPress(QPicture*, QMouseEvent*);
     void setLineStyle(Qt::PenStyle );
     void setLineCapStyle(Qt::PenCapStyle );
-    void setPolyLineEnabled(bool );
     void setLineWidth(int );
+    void setForegroundColor(QColor );
 private:
-    QPen *pen;
-    QBrush *brush;
+    QPen pen;
+    QBrush brush;
 };
 
 #endif // LINE_H

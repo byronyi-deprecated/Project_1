@@ -117,11 +117,6 @@ private:
     QAction *setLine;
     QAction *setEraser;
     QAction *setRect;
-
-    PenDialog *penDialog;
-    LineDialog *lineDialog;
-    RectDialog *rectDialog;
-    EraserDialog *eraserDialog;
 };
 
 #endif // MAINWINDOW_H

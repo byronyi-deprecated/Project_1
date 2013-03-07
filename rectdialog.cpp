@@ -53,10 +53,10 @@ void RectDialog::createDrawType()
     ellipse = new QRadioButton(tr("Ellipse"));
 
     drawtype = new QButtonGroup;
-    drawtype->addButton(rectangle, 1);
-    drawtype->addButton(roundRect, 2);
-    drawtype->addButton(circle, 3);
-    drawtype->addButton(ellipse, 4);
+    drawtype->addButton(rectangle, 0);
+    drawtype->addButton(roundRect, 1);
+    drawtype->addButton(circle, 2);
+    drawtype->addButton(ellipse, 3);
     drawtype->setExclusive(true);
 
     drawLayout = new QHBoxLayout;
@@ -198,11 +198,10 @@ void RectDialog::createFillColor()
 
 void RectDialog::applySettings()
 {
-    emit drawType(drawtype->checkedId());
-    emit fillStyle(static_cast<Qt::BrushStyle>(fillstyle->checkedId()));
-    emit boundaryStyle(static_cast<Qt::PenStyle>(bdstyle->checkedId()));
-    emit boundaryJoinStyle(static_cast<Qt::PenJoinStyle>(bdjoinstyle->checkedId()));
-    emit fillColor(fground->isChecked());
-    emit boundaryWidth(spinBox->value());
+    emit rectSettings(drawtype->checkedId(),
+                      static_cast<Qt::BrushStyle>(fillstyle->checkedId()),
+                      static_cast<Qt::PenStyle>(bdstyle->checkedId()),
+                      static_cast<Qt::PenJoinStyle>(bdjoinstyle->checkedId()),
+                      fground->isChecked(), spinBox->value());
     close();
 }

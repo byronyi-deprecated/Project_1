@@ -108,9 +108,8 @@ void LineDialog::createLineType()
 
 void LineDialog::applySettings()
 {
-    emit lineStyle(static_cast<Qt::PenStyle>(linestyle->checkedId()));
-    emit lineCapStyle(static_cast<Qt::PenCapStyle>(capstyle->checkedId()));
-    emit polyLineEnabled(poly->isChecked());
-    emit lineWidth(spinBox->value());
+    emit lineSettings(static_cast<Qt::PenStyle>(linestyle->checkedId()),
+                      static_cast<Qt::PenCapStyle>(capstyle->checkedId()),
+                      poly->isChecked(), spinBox->value());
     close();
 }

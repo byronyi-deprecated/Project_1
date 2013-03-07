@@ -12,11 +12,6 @@
 #include <QErrorMessage>
 #include <QPicture>
 
-#include "pen.h"
-#include "line.h"
-#include "rect.h"
-#include "eraser.h"
-
 class Painter : public QWidget
 {
     Q_OBJECT
@@ -28,8 +23,9 @@ public:
     int curXPos() const {return cursorPos.x();}
     int curYPos() const {return cursorPos.y();}
     QSize curSize() const
-        {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
+    {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
     double curZoomFactor() const {return zoomFactor;}
+    QColor curFColor() const {return foregroundColor;}
     QColor curBColor() const {return backgroundColor;}
     bool isNull() {return pixmap->isNull();}
 public slots:
@@ -41,22 +37,18 @@ public slots:
     bool setSize(QSize size);
     void setZoomFactor(double z);
 
-    void setPenWidth(int );
-    void setPenCapStyle(Qt::PenCapStyle );
+    void penSettings(int penWidth, Qt::PenCapStyle penCapStyle);
 
-    void setLineStyle(Qt::PenStyle );
-    void setLineCapStyle(Qt::PenCapStyle );
-    void setPolyLineEnabled(bool );
-    void setLineWidth(int );
+    void lineSettings(Qt::PenStyle lineStyle,
+                      Qt::PenCapStyle lineCapStyle,
+                      bool polyLineEnabled, int lineWidth);
 
-    void setDrawType(int );
-    void setFillStyle(Qt::BrushStyle );
-    void setBoundaryStyle(Qt::PenStyle );
-    void setBoundaryJoinStyle(Qt::PenJoinStyle );
-    void setFillColor(bool foregroundColor);
-    void setBoundaryWidth(int );
+    void rectSettings(int drawType, Qt::BrushStyle fillStyle,
+                      Qt::PenStyle boundaryStyle,
+                      Qt::PenJoinStyle boundaryJoinStyle,
+                      bool fillFColor, int boundaryWidth);
 
-    void setEraserSize(int );
+    void eraserSettings(int size);
 signals:
     void cursorChanged();
     void zoomFactorChanged();
@@ -69,12 +61,15 @@ signals:
     void eraserSettings();
 protected:
     void mousePressEvent(QMouseEvent *);
-    void mouseDoubleClickEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
 private:
     void createPaintDevice();
     enum Tool {null, isPen, isLine, isRect, isEraser} tool;
+    bool isPolylineEnabled;
+    enum Type {rectangle, roundRect, circle, ellipse} type;
     QRect *paintRect;
     QPoint cursorPos;
     QPixmap *pixmap;
@@ -82,11 +77,14 @@ private:
     QVector<QPicture> reDoActions;
     double zoomFactor;
 
-    Pen *pen;
-    Line *line;
-    Rect *rect;
-    Eraser *eraser;
+    QColor foregroundColor;
     QColor backgroundColor;
-};
+
+    QPainter *pen;
+    QPainter *line;
+    QPainter *rect;
+    QPainter *eraser;
+    QPixmap eraserCursor;
+}
 
 #endif // PAINTER_H

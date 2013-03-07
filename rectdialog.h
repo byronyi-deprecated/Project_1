@@ -18,12 +18,10 @@ public:
     explicit RectDialog(QWidget *parent = 0);
     
 signals:
-    void drawType(int );
-    void fillStyle(Qt::BrushStyle );
-    void boundaryStyle(Qt::PenStyle);
-    void boundaryJoinStyle(Qt::PenJoinStyle);
-    void fillColor(bool foreground);
-    void boundaryWidth(int );
+    void rectSettings(int drawType, Qt::BrushStyle fillStyle,
+                      Qt::PenStyle boundaryStyle,
+                      Qt::PenJoinStyle boundaryJoinStyle,
+                      bool fillFColor, int boundaryWidth);
 private slots:
     void applySettings();
 private:

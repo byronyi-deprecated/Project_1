@@ -1,5 +1,3 @@
-#include "eraser.h"
-
 Eraser::Eraser(QPaintDevice *paintDevice) :
     QPainter(paintDevice)
 {

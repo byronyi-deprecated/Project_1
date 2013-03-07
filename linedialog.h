@@ -18,10 +18,9 @@ public:
     explicit LineDialog(QWidget *parent = 0);
 
 signals:
-    void lineStyle(Qt::PenStyle);
-    void lineCapStyle(Qt::PenCapStyle);
-    void polyLineEnabled(bool);
-    void lineWidth(int);
+    void lineSettings(Qt::PenStyle lineStyle,
+                      Qt::PenCapStyle lineCapStyle,
+                      bool polyLineEnabled, int lineWidth);
 private slots:
     void applySettings();
 private:

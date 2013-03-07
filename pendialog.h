@@ -17,14 +17,10 @@ class PenDialog : public QDialog
 public:
     PenDialog(QWidget *parent = 0);
 signals:
-    void penWidth(int);
-    void penCapStyle(Qt::PenCapStyle);
+    void penSettings(int penWidth, Qt::PenCapStyle penCapStyle);
 private slots:
     void applySettings();
 private:
-    QRadioButton* styleToButton(Qt::PenCapStyle );
-    Qt::PenCapStyle buttonToStyle();
-
     QGroupBox *capstyle;
     QRadioButton *flat;
     QRadioButton *square;

@@ -18,7 +18,7 @@ public:
     explicit EraserDialog(QWidget *parent = 0);
     
 signals:
-    void eraserSize(int );
+    void eraserSettings(int size);
 private slots:
     void applySettings();
 private:

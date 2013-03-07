@@ -40,6 +40,6 @@ EraserDialog::EraserDialog(QWidget *parent) :
 
 void EraserDialog::applySettings()
 {
-    emit eraserSize(spinBox->value());
+    emit eraserSettings(spinBox->value());
     close();
 }

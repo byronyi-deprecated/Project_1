@@ -18,6 +18,11 @@ void Painter::createPaintDevice()
 
     paintActions.clear();
     reDoActions.clear();
+
+    pen = new QPainter;
+    line = new QPainter;
+    rect = new QPainter;
+    eraser = new QPainter;
 }
 
 void Painter::clear()
@@ -142,10 +147,11 @@ void Painter::mousePressEvent(QMouseEvent *e)
     }
 }
 //to be done
-void Painter::mouseDoubleClickEvent(QMouseEvent *e)
+void Painter::mouseReleaseEvent(QMouseEvent *)
 {
 
 }
+
 //to be done
 void Painter::mouseMoveEvent(QMouseEvent *e)
 {
@@ -161,6 +167,11 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
         default: break;
         }
     }
+}
+
+void Painter::mouseDoubleClickEvent(QMouseEvent *e)
+{
+
 }
 
 void Painter::paintEvent(QPaintEvent * /* e */)
@@ -186,22 +197,45 @@ void Painter::setTool(int id)
     case 3: tool = isRect; break;
     case 4: tool = isEraser; break;
     default: tool = tool; break;
+    }
 }
+
+void Painter::penSettings(int penWidth, Qt::PenCapStyle penCapStyle)
+{
+    QPen temp(pen->pen());
+    temp.setWidth(penWidth);
+    temp.setCapStyle(penCapStyle);
+    pen->setPen(temp);
 }
 
-void Painter::setPenWidth(int ){}
-void Painter::setPenCapStyle(Qt::PenCapStyle ){}
+void Painter::lineSettings(Qt::PenStyle lineStyle,
+                  Qt::PenCapStyle lineCapStyle,
+                  bool polyLineEnabled, int lineWidth)
+{
+    QPen temp(pen->pen());
+    temp.setWidth(lineWidth);
+    temp.setCapStyle(lineCapStyle);
+    temp.setStyle(lineStyle);
+    isPolylineEnabled = polyLineEnabled;
+    pen->setPen(temp);
+}
 
-void Painter::setLineStyle(Qt::PenStyle ){}
-void Painter::setLineCapStyle(Qt::PenCapStyle ){}
-void Painter::setPolyLineEnabled(bool ){}
-void Painter::setLineWidth(int ){}
+void Painter::rectSettings(int drawType, Qt::BrushStyle fillStyle,
+                  Qt::PenStyle boundaryStyle,
+                  Qt::PenJoinStyle boundaryJoinStyle,
+                  bool fillFColor, int boundaryWidth)
+{
+    type = drawType;
+    QColor color = (fillFColor) ? foregroundColor : backgroundColor;
+    QBrush btemp(color, fillStyle);
+    QPen temp(rect->pen());
+    temp.setBrush(btemp);
+    temp.setStyle(boundaryStyle);
+    temp.setJoinStyle(boundaryJoinStyle);
+    temp.setWidth(boundaryWidth);
+}
 
-void Painter::setDrawType(int ){}
-void Painter::setFillStyle(Qt::BrushStyle ){}
-void Painter::setBoundaryStyle(Qt::PenStyle ){}
-void Painter::setBoundaryJoinStyle(Qt::PenJoinStyle ){}
-void Painter::setFillColor(bool foregroundColor){}
-void Painter::setBoundaryWidth(int ){}
-
-void Painter::setEraserSize(int ){}
+void Painter::eraserSettings(int size)
+{
+    eraserCursor.scaled(size, size);
+}

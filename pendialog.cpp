@@ -66,7 +66,6 @@ PenDialog::PenDialog(QWidget *parent) :
 
 void PenDialog::applySettings()
 {
-    emit penWidth(spinBox->value());
-    emit penCapStyle(static_cast<Qt::PenCapStyle>(buttonGroup->checkedId()));
+    emit penSettings(spinBox->value(), static_cast<Qt::PenCapStyle>(buttonGroup->checkedId()));
     close();
 }

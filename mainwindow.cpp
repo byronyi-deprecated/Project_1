@@ -133,14 +133,14 @@ void MainWindow::zoomOut()
 
 void MainWindow::changeFColor()
 {
-    painter->setFColor(QColorDialog::getColor(Qt::black, this,
+    painter->setFColor(QColorDialog::getColor(painter->curFColor(), this,
                                               tr("Choose the foreground color"),
                                               QColorDialog::ShowAlphaChannel));
 }
 
 void MainWindow::changeBColor()
 {
-    painter->setBColor(QColorDialog::getColor(Qt::white, this,
+    painter->setBColor(QColorDialog::getColor(painter->curBColor(), this,
                                               tr("Choose the background color"),
                                               QColorDialog::ShowAlphaChannel));
 }
@@ -480,10 +480,9 @@ QString MainWindow::strippedName(const QString &fullFileName)
 void MainWindow::penSettings()
 {
     PenDialog penDialog(this);
-    connect(&penDialog, SIGNAL(penWidth(int)),
-            painter, SLOT(setPenWidth(int)));
-    connect(&penDialog, SIGNAL(penCapStyle(Qt::PenCapStyle)),
-             painter, SLOT(setPenCapStyle(Qt::PenCapStyle)));
+
+    connect(&penDialog, SIGNAL(penSettings(int,Qt::PenCapStyle)),
+            painter, SLOT(penSettings(int,Qt::PenCapStyle)));
 
     penDialog.exec();
 }
@@ -492,14 +491,8 @@ void MainWindow::lineSettings()
 {
     LineDialog lineDialog(this);
 
-    connect(&lineDialog, SIGNAL(lineStyle(Qt::PenStyle)),
-            painter, SLOT(setLineStyle(Qt::PenStyle)));
-    connect(&lineDialog, SIGNAL(lineCapStyle(Qt::PenCapStyle)),
-            painter, SLOT(setLineCapStyle(Qt::PenCapStyle)));
-    connect(&lineDialog, SLOT(polyLineEnabled(bool)),
-            painter, SLOT(setPolyLineEnabled(bool)));
-    connect(&lineDialog, SLOT(lineWidth(int)),
-            painter, SLOT(setLineWidth(int)));
+    connect(&lineDialog, SIGNAL(lineSettings(Qt::PenStyle,Qt::PenCapStyle,bool,int)),
+            painter, SLOT(lineSettings(Qt::PenStyle,Qt::PenCapStyle,bool,int)));
 
     lineDialog.exec();
 }
@@ -508,18 +501,8 @@ void MainWindow::rectSettings()
 {
       RectDialog rectDialog(this);
 
-      connect(&rectDialog, SIGNAL(drawType(int )),
-              painter, SLOT(setDrawType(int)));
-      connect(&rectDialog, SIGNAL(fillStyle(Qt::BrushStyle)),
-              painter, SLOT(setFillStyle(Qt::BrushStyle)));
-      connect(&rectDialog, SIGNAL(boundaryStyle(Qt::PenStyle)),
-              painter, SLOT(setBoundaryStyle(Qt::PenStyle)));
-      connect(&rectDialog, SIGNAL(boundaryJoinStyle(Qt::PenJoinStyle)),
-              painter, SLOT(setBoundaryJoinStyle(Qt::PenJoinStyle)));
-      connect(&rectDialog, SIGNAL(fillColor(bool)),
-              painter, SLOT(setFillColor(bool)));
-      connect(&rectDialog, SIGNAL(boundaryWidth(int)),
-              painter, SLOT(setBoundaryWidth(int)));
+      connect(&rectDialog, SIGNAL(rectSettings(int,Qt::BrushStyle,Qt::PenStyle,Qt::PenJoinStyle,bool,int)),
+              painter, SLOT(rectSettings(int,Qt::BrushStyle,Qt::PenStyle,Qt::PenJoinStyle,bool,int)));
 
       rectDialog.exec();
 }
@@ -528,8 +511,8 @@ void MainWindow::eraserSettings()
 {
     EraserDialog eraserDialog(this);
 
-    connect(&eraserDialog, SIGNAL(eraserSize(int)),
-            painter, SLOT(setEraserSize()));
+    connect(&eraserDialog, SIGNAL(eraserSettings(int)),
+            painter, SLOT(eraserSettings(int)));
 
     eraserDialog.exec();
 }

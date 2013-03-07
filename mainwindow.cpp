@@ -356,13 +356,13 @@ void MainWindow::createStatusBar()
 
 void MainWindow::createRightButtonSettings()
 {
-    connect(painter, SIGNAL(penSettings()),
+    connect(painter, SIGNAL(pensettings()),
             this, SLOT(penSettings()));
-    connect(painter, SIGNAL(lineSettings()),
+    connect(painter, SIGNAL(linesettings()),
             this, SLOT(lineSettings()));
-    connect(painter, SIGNAL(rectSettings()),
+    connect(painter, SIGNAL(rectsettings()),
             this, SLOT(rectSettings()));
-    connect(painter, SIGNAL(eraserSettings()),
+    connect(painter, SIGNAL(erasersettings()),
             this, SLOT(eraserSettings()));
 }
 

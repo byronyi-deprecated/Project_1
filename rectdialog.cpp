@@ -12,8 +12,8 @@ RectDialog::RectDialog(QWidget *parent) :
     label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(1, 15);
-    spinBox->setRange(1, 15);
+    slider->setRange(10, 40);
+    spinBox->setRange(10, 40);
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),

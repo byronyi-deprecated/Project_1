@@ -8,8 +8,8 @@ PenDialog::PenDialog(QWidget *parent) :
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
 
-    slider->setRange(0, 12);
-    spinBox->setRange(0, 12);
+    slider->setRange(10, 40);
+    spinBox->setRange(10, 40);
 
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));

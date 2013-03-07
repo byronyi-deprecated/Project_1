@@ -15,5 +15,6 @@
         <file>images/resize_icon.bmp</file>
         <file>images/save_icon.bmp</file>
         <file>images/undo_icon.bmp</file>
+        <file>images/eraserCursor.bmp</file>
     </qresource>
 </RCC>

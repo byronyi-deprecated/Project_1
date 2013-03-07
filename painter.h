@@ -53,12 +53,10 @@ signals:
     void cursorChanged();
     void zoomFactorChanged();
     void imageModified(bool );
-    void fColorChanged(QColor );
-    void bColorChanged(QColor );
-    void penSettings();
-    void lineSettings();
-    void rectSettings();
-    void eraserSettings();
+    void pensettings();
+    void linesettings();
+    void rectsettings();
+    void erasersettings();
 protected:
     void mousePressEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
@@ -69,12 +67,13 @@ private:
     void createPaintDevice();
     enum Tool {null, isPen, isLine, isRect, isEraser} tool;
     bool isPolylineEnabled;
+    bool fillWithFColor;
     enum Type {rectangle, roundRect, circle, ellipse} type;
     QRect *paintRect;
     QPoint cursorPos;
     QPixmap *pixmap;
-    QVector<QPicture> paintActions;
-    QVector<QPicture> reDoActions;
+    QVector<QPicture*> paintActions;
+    QVector<QPicture*> reDoActions;
     double zoomFactor;
 
     QColor foregroundColor;
@@ -85,6 +84,6 @@ private:
     QPainter *rect;
     QPainter *eraser;
     QPixmap eraserCursor;
-}
+};
 
 #endif // PAINTER_H

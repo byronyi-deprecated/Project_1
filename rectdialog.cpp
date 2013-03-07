@@ -9,11 +9,11 @@ RectDialog::RectDialog(QWidget *parent) :
     createBDJoinStyle();
     createFillColor();
 
-    label = new QLabel(tr("Eraser Size"));
+    label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(1, 40);
-    spinBox->setRange(1, 40);
+    slider->setRange(1, 15);
+    spinBox->setRange(1, 15);
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
@@ -26,21 +26,19 @@ RectDialog::RectDialog(QWidget *parent) :
     connect(no, SIGNAL(clicked()),
             this, SLOT(close()));
 
-    middleLeft->addLayout(BDLayout);
-    middleLeft->addLayout(BDJoinLayout);
-
-    middle->addLayout(middleLeft);
-    middle->addLayout(colorLayout);
-
     bottom = new QHBoxLayout;
     bottom->addWidget(slider);
     bottom->addWidget(label);
     bottom->addWidget(spinBox);
 
-    mainLayout->addLayout(drawLayout);
-    mainLayout->addLayout(fillLayout);
-    mainLayout->addLayout(middle);
+    mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(drawtypeGroupBox);
+    mainLayout->addWidget(fillstyleGroupBox);
+    mainLayout->addWidget(bdstyleGroupBox);
+    mainLayout->addWidget(bdjoinGroupBox);
     mainLayout->addLayout(bottom);
+    mainLayout->addWidget(yes);
+    mainLayout->addWidget(no);
 
     setLayout(mainLayout);
     setWindowTitle(tr("Rectangle Settings"));
@@ -54,7 +52,7 @@ void RectDialog::createDrawType()
     circle = new QRadioButton(tr("Circle"));
     ellipse = new QRadioButton(tr("Ellipse"));
 
-    drawtype = new QButtonGroup;//(tr("Draw Type"));
+    drawtype = new QButtonGroup;
     drawtype->addButton(rectangle, 1);
     drawtype->addButton(roundRect, 2);
     drawtype->addButton(circle, 3);
@@ -66,6 +64,9 @@ void RectDialog::createDrawType()
     drawLayout->addWidget(roundRect);
     drawLayout->addWidget(circle);
     drawLayout->addWidget(ellipse);
+
+    drawtypeGroupBox = new QGroupBox(tr("Draw Type"));
+    drawtypeGroupBox->setLayout(drawLayout);
 }
 
 void RectDialog::createFillStyle()
@@ -86,7 +87,7 @@ void RectDialog::createFillStyle()
     cDiag = new QRadioButton(tr("C. Diag"));
     nopattern = new QRadioButton(tr("No Pattern"));
 
-    fillstyle = new QButtonGroup;//(tr("Fill Style"));
+    fillstyle = new QButtonGroup;
     fillstyle->addButton(solid, 1);
     fillstyle->addButton(dense1, 2);
     fillstyle->addButton(dense2, 3);
@@ -121,6 +122,9 @@ void RectDialog::createFillStyle()
     fillLayout->addWidget(fDiag);
     fillLayout->addWidget(cDiag);
     fillLayout->addWidget(nopattern);
+
+    fillstyleGroupBox = new QGroupBox(tr("Fill Style"));
+    fillstyleGroupBox->setLayout(fillLayout);
 }
 
 void RectDialog::createBDStyle()
@@ -132,7 +136,7 @@ void RectDialog::createBDStyle()
     dadodo = new QRadioButton(tr("Dash Dot Dot Line"));
     noline = new QRadioButton(tr("No Line"));
 
-    bdstyle = new QButtonGroup;//(tr("Boundary Style"));
+    bdstyle = new QButtonGroup;
     bdstyle->addButton(solidline, 1);
     bdstyle->addButton(dash, 2);
     bdstyle->addButton(dot, 3);
@@ -141,13 +145,16 @@ void RectDialog::createBDStyle()
     bdstyle->addButton(noline, 0);
     bdstyle->setExclusive(true);
 
-    BDLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-    BDLayout->addWidget(solidline);
-    BDLayout->addWidget(dash);
-    BDLayout->addWidget(dot);
-    BDLayout->addWidget(dado);
-    BDLayout->addWidget(dadodo);
-    BDLayout->addWidget(noline);
+    bdLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    bdLayout->addWidget(solidline);
+    bdLayout->addWidget(dash);
+    bdLayout->addWidget(dot);
+    bdLayout->addWidget(dado);
+    bdLayout->addWidget(dadodo);
+    bdLayout->addWidget(noline);
+
+    bdstyleGroupBox = new QGroupBox(tr("Boundary Style"));
+    bdstyleGroupBox->setLayout(bdLayout);
 }
 
 void RectDialog::createBDJoinStyle()
@@ -156,16 +163,19 @@ void RectDialog::createBDJoinStyle()
     bevel = new QRadioButton(tr("Bevel Join"));
     round = new QRadioButton(tr("Round Join"));
 
-    bdjoinstyle = new QButtonGroup;//(tr("Boundary Join Style"));
+    bdjoinstyle = new QButtonGroup;
     bdjoinstyle->addButton(miter, 0x00);
     bdjoinstyle->addButton(bevel, 0x40);
     bdjoinstyle->addButton(round, 0x80);
     bdjoinstyle->setExclusive(true);
 
-    BDJoinLayout = new QHBoxLayout;
-    BDJoinLayout->addWidget(miter);
-    BDJoinLayout->addWidget(bevel);
-    BDJoinLayout->addWidget(round);
+    bdjoinLayout = new QHBoxLayout;
+    bdjoinLayout->addWidget(miter);
+    bdjoinLayout->addWidget(bevel);
+    bdjoinLayout->addWidget(round);
+
+    bdjoinGroupBox = new QGroupBox(tr("Boundary Join Style"));
+    bdjoinGroupBox->setLayout(bdjoinLayout);
 }
 
 void RectDialog::createFillColor()
@@ -173,7 +183,7 @@ void RectDialog::createFillColor()
     fground = new QRadioButton(tr("Foreground"));
     bground = new QRadioButton(tr("Background"));
 
-    fillcolor = new QButtonGroup;//(tr("Fill Color"));
+    fillcolor = new QButtonGroup;
     fillcolor->addButton(fground, 1);
     fillcolor->addButton(bground, 1);
     fillcolor->setExclusive(true);
@@ -181,6 +191,9 @@ void RectDialog::createFillColor()
     colorLayout = new QVBoxLayout;
     colorLayout->addWidget(fground);
     colorLayout->addWidget(bground);
+
+    colorGroupBox = new QGroupBox(tr("Fill Color"));
+    colorGroupBox->setLayout(colorLayout);
 }
 
 void RectDialog::applySettings()

@@ -34,6 +34,8 @@ private:
 
     QPushButton *yes;
     QPushButton *no;
+    QVBoxLayout *topRightLayout;
+
     QHBoxLayout *topLayout;
 
     QSlider *slider;

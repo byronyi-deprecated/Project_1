@@ -4,13 +4,12 @@
 PenDialog::PenDialog(QWidget *parent) :
     QDialog(parent)
 {
-    label = new QLabel(tr("Pen &width"));
-    slider = new QSlider(Qt::Horizontal, this);
-    spinBox = new QSpinBox(this);
-    label->setBuddy(slider);
+    label = new QLabel(tr("Width"));
+    slider = new QSlider(Qt::Horizontal);
+    spinBox = new QSpinBox;
 
-    slider->setRange(0, 40);
-    spinBox->setRange(0, 40);
+    slider->setRange(0, 12);
+    spinBox->setRange(0, 12);
 
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));
@@ -28,8 +27,8 @@ PenDialog::PenDialog(QWidget *parent) :
     buttonGroup->addButton(round, 3);
     buttonGroup->setExclusive(true);
 
-    yes = new QPushButton(tr("&Yes"), this);
-    no = new QPushButton(tr("&No"), this);
+    yes = new QPushButton(tr("&Yes"));
+    no = new QPushButton(tr("&No"));
     no->setDefault(true);
     connect(yes, SIGNAL(clicked()),
             this, SLOT(applySettings()));
@@ -43,10 +42,13 @@ PenDialog::PenDialog(QWidget *parent) :
     topLeftLayout->addStretch(1);
     capstyle->setLayout(topLeftLayout);
 
+    topRightLayout = new QVBoxLayout;
+    topRightLayout->addWidget(yes);
+    topRightLayout->addWidget(no);
+
     topLayout = new QHBoxLayout;
-    topLayout->addLayout(topLeftLayout);
-    topLayout->addWidget(yes);
-    topLayout->addWidget(no);
+    topLayout->addWidget(capstyle);
+    topLayout->addLayout(topRightLayout);
 
     bottomLayout = new QHBoxLayout;
     bottomLayout->addWidget(slider);

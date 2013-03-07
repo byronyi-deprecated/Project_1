@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
     readSettings();
 
     setWindowIcon(QIcon(":/images/icon.jpg"));
-//    connect(painter, SIGNAL(imageModified(bool)),
-//            this, SLOT(setWindowModified(bool)));
     setCurrentFile("");
 }
 
@@ -261,17 +259,17 @@ void MainWindow::createActions()
     setPen->setCheckable(true);
 
     setLine = new QToolButton;
-    setPen->setIcon(QIcon(":/images/line_icon.bmp"));
+    setLine->setIcon(QIcon(":/images/line_icon.bmp"));
     setLine->setStatusTip(tr("Line"));
     setLine->setCheckable(true);
 
     setRect = new QToolButton;
-    setPen->setIcon(QIcon(":/images/rect_icon.bmp"));
+    setRect->setIcon(QIcon(":/images/rect_icon.bmp"));
     setRect->setStatusTip(tr("Rectangle"));
     setRect->setCheckable(true);
 
     setEraser = new QToolButton;
-    setPen->setIcon(QIcon(":/images/eraser_icon.bmp"));
+    setEraser->setIcon(QIcon(":/images/eraser_icon.bmp"));
     setEraser->setStatusTip(tr("Eraser"));
     setEraser->setCheckable(true);
 
@@ -509,6 +507,7 @@ void MainWindow::lineSettings()
 void MainWindow::rectSettings()
 {
       RectDialog rectDialog(this);
+
       connect(&rectDialog, SIGNAL(drawType(int )),
               painter, SLOT(setDrawType(int)));
       connect(&rectDialog, SIGNAL(fillStyle(Qt::BrushStyle)),

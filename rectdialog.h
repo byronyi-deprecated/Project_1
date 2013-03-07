@@ -9,6 +9,7 @@
 #include <QSlider>
 #include <QLayout>
 #include <QPushButton>
+#include <QGroupBox>
 
 class RectDialog : public QDialog
 {
@@ -36,7 +37,9 @@ private:
     QRadioButton *rectangle;
     QRadioButton *roundRect;
     QRadioButton *circle;
-    QRadioButton *ellipse;
+    QRadioButton *ellipse;    
+    QHBoxLayout *drawLayout;
+    QGroupBox *drawtypeGroupBox;
 
     QButtonGroup *fillstyle;
     QRadioButton *solid;
@@ -54,6 +57,8 @@ private:
     QRadioButton *fDiag;
     QRadioButton *cDiag;
     QRadioButton *nopattern;
+    QBoxLayout *fillLayout;
+    QGroupBox *fillstyleGroupBox;
 
     QButtonGroup *bdstyle;
     QRadioButton *solidline;
@@ -62,15 +67,21 @@ private:
     QRadioButton *dado;
     QRadioButton *dadodo;
     QRadioButton *noline;
+    QBoxLayout *bdLayout;
+    QGroupBox *bdstyleGroupBox;
 
     QButtonGroup *bdjoinstyle;
     QRadioButton *miter;
     QRadioButton *bevel;
-    QRadioButton *round;
+    QRadioButton *round;    
+    QHBoxLayout *bdjoinLayout;
+    QGroupBox *bdjoinGroupBox;
 
     QButtonGroup *fillcolor;
     QRadioButton *fground;
-    QRadioButton *bground;
+    QRadioButton *bground;    
+    QVBoxLayout *colorLayout;
+    QGroupBox *colorGroupBox;
 
     QSlider *slider;
     QLabel *label;
@@ -80,14 +91,6 @@ private:
     QPushButton *no;
 
     QVBoxLayout *mainLayout;
-    QHBoxLayout *drawLayout;
-    QBoxLayout *fillLayout;
-    QBoxLayout *BDLayout;
-    QHBoxLayout *BDJoinLayout;
-    QVBoxLayout *colorLayout;
-
-    QVBoxLayout *middleLeft;
-    QHBoxLayout *middle;
 
     QHBoxLayout *bottom;
 };

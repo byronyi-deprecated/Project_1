@@ -8,6 +8,8 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QLayout>
+#include <QPushButton>
+#include <QGroupBox>
 
 class LineDialog : public QDialog
 {
@@ -23,28 +25,42 @@ signals:
 private slots:
     void applySettings();
 private:
+    void createLineStyle();
+    void createCapStyle();
+    void createLineType();
+
     QButtonGroup *linestyle;
     QRadioButton *solidline;
     QRadioButton *dash;
     QRadioButton *dot;
     QRadioButton *dado;
-    QRadioButton *dadodo;
+    QRadioButton *dadodo;    
+    QBoxLayout *linestyleLayout;
+    QGroupBox *linestyleGroupBox;
 
     QButtonGroup *capstyle;
     QRadioButton *flat;
     QRadioButton *square;
     QRadioButton *round;
+    QHBoxLayout *capstyleLayout;
+    QGroupBox *capstyleGroupBox;
 
     QButtonGroup *linetype;
     QRadioButton *single;
     QRadioButton *poly;
+    QVBoxLayout *linetypeLayout;
+    QGroupBox *linetypeGroupBox;
 
     QSlider *slider;
     QLabel *label;
     QSpinBox *spinBox;
+    QHBoxLayout *widthLayout;
 
     QPushButton *yes;
     QPushButton *no;
+    QVBoxLayout *yesnoLayout;
+
+    QVBoxLayout *mainLayout;
 };
 
 #endif // LINEDIALOG_H

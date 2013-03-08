@@ -6,8 +6,9 @@ EraserDialog::EraserDialog(QWidget *parent) :
     label = new QLabel(tr("Eraser Size"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(10, 50);
-    spinBox->setRange(10, 50);
+    slider->setRange(10, 100);
+    spinBox->setRange(10, 100);
+    spinBox->setValue(20);
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
@@ -18,7 +19,7 @@ EraserDialog::EraserDialog(QWidget *parent) :
     connect(yes, SIGNAL(clicked()),
             this, SLOT(applySettings()));
     connect(no, SIGNAL(clicked()),
-            this, SLOT(close()));
+            this, SLOT(hide()));
 
     topLayout = new QHBoxLayout;
     topLayout->addWidget(slider);
@@ -41,5 +42,5 @@ EraserDialog::EraserDialog(QWidget *parent) :
 void EraserDialog::applySettings()
 {
     emit eraserSettings(spinBox->value());
-    close();
+    hide();
 }

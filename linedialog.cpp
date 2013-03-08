@@ -10,8 +10,11 @@ LineDialog::LineDialog(QWidget *parent) :
     label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(5, 30);
-    spinBox->setRange(5, 30);
+    slider->setRange(1, 30);
+    spinBox->setRange(1, 30);
+
+    spinBox->setValue(10);
+
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),

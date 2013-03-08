@@ -11,6 +11,8 @@ PenDialog::PenDialog(QWidget *parent) :
     slider->setRange(10, 40);
     spinBox->setRange(10, 40);
 
+    spinBox->setValue(10);
+
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));
     connect(slider, SIGNAL(valueChanged(int)),
@@ -22,9 +24,9 @@ PenDialog::PenDialog(QWidget *parent) :
     round = new QRadioButton(tr("Round cap"));
 
     buttonGroup = new QButtonGroup;
-    buttonGroup->addButton(flat, 1);
-    buttonGroup->addButton(square, 2);
-    buttonGroup->addButton(round, 3);
+    buttonGroup->addButton(flat, 0x00);
+    buttonGroup->addButton(square, 0x10);
+    buttonGroup->addButton(round, 0x20);
     buttonGroup->setExclusive(true);
 
     yes = new QPushButton(tr("&Yes"));

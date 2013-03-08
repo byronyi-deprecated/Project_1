@@ -12,8 +12,11 @@ RectDialog::RectDialog(QWidget *parent) :
     label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(10, 40);
-    spinBox->setRange(10, 40);
+    slider->setRange(1, 40);
+    spinBox->setRange(1, 40);
+
+    spinBox->setValue(10);
+
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
@@ -36,6 +39,7 @@ RectDialog::RectDialog(QWidget *parent) :
     mainLayout->addWidget(fillstyleGroupBox);
     mainLayout->addWidget(bdstyleGroupBox);
     mainLayout->addWidget(bdjoinGroupBox);
+    mainLayout->addWidget(colorGroupBox);
     mainLayout->addLayout(bottom);
     mainLayout->addWidget(yes);
     mainLayout->addWidget(no);
@@ -53,10 +57,10 @@ void RectDialog::createDrawType()
     ellipse = new QRadioButton(tr("Ellipse"));
 
     drawtype = new QButtonGroup;
-    drawtype->addButton(rectangle, 0);
-    drawtype->addButton(roundRect, 1);
-    drawtype->addButton(circle, 2);
-    drawtype->addButton(ellipse, 3);
+    drawtype->addButton(rectangle, 1);
+    drawtype->addButton(roundRect, 2);
+    drawtype->addButton(circle, 3);
+    drawtype->addButton(ellipse, 4);
     drawtype->setExclusive(true);
 
     drawLayout = new QHBoxLayout;
@@ -198,6 +202,7 @@ void RectDialog::createFillColor()
 
 void RectDialog::applySettings()
 {
+
     emit rectSettings(drawtype->checkedId(),
                       static_cast<Qt::BrushStyle>(fillstyle->checkedId()),
                       static_cast<Qt::PenStyle>(bdstyle->checkedId()),

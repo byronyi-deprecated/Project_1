@@ -23,11 +23,11 @@ public:
     int curXPos() const {return cursorPos.x();}
     int curYPos() const {return cursorPos.y();}
     QSize curSize() const
-    {if(!pixmap) return QSize(0, 0); else return pixmap->size();}
+    {if(!mainPixmap) return QSize(0, 0); else return mainPixmap.size();}
     double curZoomFactor() const {return zoomFactor;}
     QColor curFColor() const {return foregroundColor;}
     QColor curBColor() const {return backgroundColor;}
-    bool isNull() {return pixmap->isNull();}
+    bool isNull() {return mainPixmap.isNull();}
 public slots:
     void unDo();
     void reDo();
@@ -48,7 +48,7 @@ public slots:
                       Qt::PenJoinStyle boundaryJoinStyle,
                       bool fillFColor, int boundaryWidth);
 
-    void eraserSettings(int size);
+    void eraserSettings(int eraserSize);
 signals:
     void cursorChanged();
     void zoomFactorChanged();
@@ -65,25 +65,49 @@ protected:
     void paintEvent(QPaintEvent *);
 private:
     void createPaintDevice();
-    enum Tool {null, isPen, isLine, isRect, isEraser} tool;
-    bool isPolylineEnabled;
-    bool fillWithFColor;
-    enum Type {rectangle, roundRect, circle, ellipse} type;
+    void clearUnReDo();
+    void setPen(QPainter*);
+    void setLine(QPainter*);
+    void setRect(QPainter*);
+    void setEraser(QPainter*);
+
     QRect *paintRect;
     QPoint cursorPos;
-    QPixmap *pixmap;
-    QVector<QPicture*> paintActions;
-    QVector<QPicture*> reDoActions;
-    double zoomFactor;
+    QPixmap mainPixmap;
+    QPixmap backupPixmap;
+    bool undo;
+    bool isPainting;
+    QPixmap temp;
+    QPixmap *eraserCursor;
 
+    QPoint start;
+    QPoint end;
+    QVector<QPoint > polyline;
+
+//    QVector<QPixmap*> unDoList;
+//    QVector<QPixmap*> reDoList;
+
+    enum Tool {null, isPen, isLine, isRect, isEraser} tool;
+    double zoomFactor;
     QColor foregroundColor;
     QColor backgroundColor;
 
-    QPainter *pen;
-    QPainter *line;
-    QPainter *rect;
-    QPainter *eraser;
-    QPixmap eraserCursor;
+    int penWidth;
+    Qt::PenCapStyle penCapStyle;
+
+    Qt::PenStyle lineStyle;
+    Qt::PenCapStyle lineCapStyle;
+    bool polyLineEnabled;
+    int lineWidth;
+
+    int drawType;
+    Qt::BrushStyle fillStyle;
+    Qt::PenStyle boundaryStyle;
+    Qt::PenJoinStyle boundaryJoinStyle;
+    bool fillFColor;
+    int boundaryWidth;
+
+    int eraserSize;
 };
 
 #endif // PAINTER_H

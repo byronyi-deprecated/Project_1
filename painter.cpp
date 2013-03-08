@@ -1,5 +1,6 @@
 #include "painter.h"
 #include <QMessageBox>
+#include <QDebug>
 
 Painter::Painter(QWidget *parent) :
     QWidget(parent)
@@ -9,51 +10,62 @@ Painter::Painter(QWidget *parent) :
     createPaintDevice();
     this->setMouseTracking(true);
     emit imageModified(false);
+    isPainting = false;
     foregroundColor = Qt::black;
     backgroundColor = Qt::white;
-    eraserCursor.load(":/images/eraserCursor.bmp");
-    eraserCursor = eraserCursor.scaled(QSize(10, 10));
-//    QMessageBox::warning(this,"", QString::number(eraserCursor.width()));
+    eraserCursor = new QPixmap;
+    eraserCursor->load(":/images/eraserCursor.bmp");
+    *eraserCursor = eraserCursor->scaled(QSize(10, 10));
+    //    QMessageBox::warning(this,"", QString::number(eraserCursor.width()));
 }
 
 void Painter::createPaintDevice()
 {
-    pixmap = new QPixmap;
+    start = QPoint(1024, 1024);
+    end = QPoint(1024, 1024);
     paintRect = new QRect(this->pos(), QSize(0, 0));
+    penSettings(2,Qt::RoundCap);
 
-    paintActions.clear();
-    reDoActions.clear();
+    lineSettings(Qt::SolidLine,Qt::RoundCap,
+                 false,2);
 
-    pen = new QPainter;
-    line = new QPainter;
-    rect = new QPainter;
-    eraser = new QPainter;
+    rectSettings(1,Qt::NoBrush,Qt::SolidLine,
+                 Qt::MiterJoin,true,2);
+
+    eraserSettings(5);
 }
+
+//void Painter::clearUnReDo()
+//{
+//    for(int i = 0; i < unDoList.size(); i++)
+//        delete unDoList[i];
+//    for(int i = 0; i < reDoList.size(); i++)
+//        delete reDoList[i];
+//    unDoList.clear();
+//    reDoList.clear();
+//}
 
 void Painter::clear()
 {
+    start = QPoint(1024, 1024);
+    end = QPoint(1024, 1024);
+    backupPixmap = mainPixmap;
     zoomFactor = 1.0;
-    paintRect->setSize(pixmap->size() * zoomFactor);
-    pixmap->fill(curBColor());
-    for(int i = 0; i < paintActions.size(); i++)
-    {
-        delete paintActions[i];
-    }
-    for(int i = 0; i < reDoActions.size(); i++)
-    {
-        delete paintActions[i];
-    }
-    paintActions.clear();
-    reDoActions.clear();
+    paintRect->setSize(mainPixmap.size());
+    mainPixmap.fill(backgroundColor);
+    //    unDoList.append(pixmap);
+    update();
 }
 
 bool Painter::readFile(QString fileName)
 {
     if(!fileName.isEmpty())
     {
-        pixmap->load(fileName);
+        //        clearUnReDo();
+        mainPixmap.load(fileName);
+        //        unDoList.append(pixmap);
         zoomFactor = 1.0;
-        paintRect->setSize(pixmap->size());
+        paintRect->setSize(mainPixmap.size());
         update();
     }
     return !fileName.isEmpty();
@@ -61,129 +73,62 @@ bool Painter::readFile(QString fileName)
 
 bool Painter::writeFile(QString fileName)
 {
-    QPixmap saveImage(*pixmap);
-    QPainter savePainter(&saveImage);
-    int tempZoomFactor(curZoomFactor());
-    setZoomFactor(1.0);
-    for(int i = 0; i < paintActions.count(); i++)
-    {
-        paintActions[i]->play(&savePainter);
-    }
-    setZoomFactor(tempZoomFactor);
+    QPixmap saveImage(mainPixmap);
     return saveImage.save(fileName);
 }
 
 void Painter::unDo()
 {
-    if(paintActions.isEmpty()) return;
-    reDoActions.append(paintActions.last());
-    paintActions.pop_back();
+    if(!undo) return;
+    QPixmap temp(mainPixmap);
+    mainPixmap = backupPixmap;
+    backupPixmap = temp;
+    undo = false;
+    //    if(unDoList.isEmpty()) return;
+    //    reDoList.append(unDoList.last());
+    //    unDoList.pop_back();
 }
 
 void Painter::reDo()
 {
-    if(reDoActions.isEmpty()) return;
-    paintActions.append(paintActions.last());
-    reDoActions.pop_back();
-}
-
-void Painter::setZoomFactor(double z)
-{
-    if(z < 0) zoomFactor = 0.001; else zoomFactor = z;
-    emit zoomFactorChanged();
-    paintRect->setSize(pixmap->size() * zoomFactor);
-    update();
+    QPixmap temp(mainPixmap);
+    mainPixmap = backupPixmap;
+    backupPixmap = mainPixmap;
+    //    if(reDoList.isEmpty()) return;
+    //    unDoList.append(reDoList.last());
+    //    reDoList.pop_back();
 }
 
 bool Painter::setSize(QSize size)
 {
     if(size == curSize())
         return false;
-    if(pixmap->isNull())
+    if(mainPixmap.isNull())
     {
-        *pixmap = QPixmap(1, 1);
-        pixmap->fill();
-
-        for(int i = 0; i < paintActions.size(); i++)
-        {
-            delete paintActions[i];
-        }
-        for(int i = 0; i < reDoActions.size(); i++)
-        {
-            delete reDoActions[i];
-        }
-        paintActions.clear();
-        reDoActions.clear();
-
+        mainPixmap = QPixmap(QSize(1, 1));
+        mainPixmap.fill();
         emit imageModified(true);
+        undo = false;
     }
-    *pixmap = pixmap->scaled(size);
+    backupPixmap = mainPixmap;
+    mainPixmap = mainPixmap.scaled(size);
     paintRect->setSize(size);
     update();
     return true;
 }
 
-void Painter::setFColor(QColor curColor)
-{
-    foregroundColor = curColor;
-
-    QPen ptemp;
-    QBrush btemp;
-
-    ptemp = pen->pen();
-    ptemp.setColor(curColor);
-    pen->setPen(ptemp);
-
-    ptemp = line->pen();
-    ptemp.setColor(curColor);
-    line->setPen(ptemp);
-
-    ptemp = rect->pen();
-    ptemp.setColor(curColor);
-    rect->setPen(ptemp);
-
-    btemp = rect->brush();
-    btemp.setColor((fillWithFColor) ? foregroundColor :
-                                      backgroundColor);
-    rect->setBrush(btemp);
-}
-
-void Painter::setBColor(QColor curColor)
-{
-    backgroundColor = curColor;
-
-    QBrush btemp;
-
-    btemp = rect->brush();
-    btemp.setColor((fillWithFColor) ? foregroundColor :
-                                  backgroundColor);
-    rect->setBrush(btemp);
-}
-
 //to be done
+
 void Painter::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
     {
-        for(int i = 0; i < reDoActions.size(); i++)
-        {
-            delete reDoActions[i];
-        }
-        reDoActions.clear();
+        if(tool == null) return;
 
-        QPicture *temp = new QPicture;
-        paintActions.append(temp);
-
-        switch(tool) {
-        case isPen:
-            pen->begin(temp);
-            pen->drawPoint(e->pos() / zoomFactor);
-        case isLine:
-        case isRect:
-        case isEraser:
-        default: break;
-        }
-        update();
+        //        if(polyLineEnabled) polyline.append(e->pos());
+        //        else
+        start = e->pos();
+        isPainting = true;
     }
     if(e->button() == Qt::RightButton)
     {
@@ -213,105 +158,209 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
 
     if(e->buttons() & Qt::LeftButton)
     {
-        switch(tool) {
-        case isPen:
-        case isLine:
-        case isRect:
-        case isEraser:
-        default: break;
-        }
+        end = e->pos();
+        update();
     }
 }
 //to be done
 void Painter::mouseReleaseEvent(QMouseEvent *e)
 {
-    if(e->buttons() == Qt::LeftButton)
+    if(e->button() == Qt::LeftButton)
     {
-        switch(tool) {
-        case isPen: pen->end();
-        case isLine:
-        case isRect:
-        case isEraser:
-        default: break;
-        }
+        end = e->pos();
+        qDebug() << end.x() << "," << end.y() << endl;
+        isPainting = false;
+        update();
     }
 }
 
 void Painter::mouseDoubleClickEvent(QMouseEvent *e)
 {
-
+    if(e->buttons() == Qt::LeftButton && polyLineEnabled)
+    {
+        if(tool == null) return;
+        end = e->pos();
+        update();
+        polyline.clear();
+    }
 }
 
 void Painter::paintEvent(QPaintEvent * /* e */)
 {
-    if(!pixmap->isNull())
-    {
-        QPainter painter(this);
-        painter.drawPixmap((*paintRect), (*pixmap));
-        for(int i = 0; i < paintActions.count(); i++)
-        {
-            paintActions[i]->play(&painter);
+    if(!mainPixmap) return;
+    QPainter painter;
+    undo = true;
+
+    if(tool == isPen || tool == isEraser){
+        painter.begin(&mainPixmap);
+        if(tool == isPen){
+            setPen(&painter);
+            painter.drawLine(start, end);
+            start = end;
+        }
+        else{
+            setEraser(&painter);
+            painter.drawLine(start, end);
+            start = end;
         }
     }
+    else
+    {
+        QRect r(start, end);
+        if(isPainting){
+            temp = mainPixmap;
+            painter.begin(&temp);
+        }
+        else {
+            backupPixmap = mainPixmap;
+            painter.begin(&mainPixmap);
+        }
+        if(tool == isLine){
+            setLine(&painter);
+            painter.drawLine(start, end);
+        }
+        else{
+            setRect(&painter);
+            r = r.normalized();
+            switch(drawType){
+            case 1:
+                painter.drawRect(r);
+                break;
+            case 2:
+                painter.drawRoundedRect(r, 20, 20,
+                                        Qt::RelativeSize);
+                break;
+            case 3:
+                painter.drawPie(r, 0, 5760);
+                break;
+            case 4:
+                painter.drawEllipse(r);
+                break;
+            default:
+                painter.drawRect(r);
+            }
+        }
+    }
+    painter.end();
+    QPainter p(this);
+    if(tool == isPen || tool == isEraser)
+        p.drawPixmap((*paintRect), mainPixmap);
+    else if(isPainting)
+        p.drawPixmap((*paintRect), temp);
+    else
+        p.drawPixmap((*paintRect), mainPixmap);
+
+}
+
+void Painter::setZoomFactor(double z)
+{
+    if(z < 0) zoomFactor = 0.001; else zoomFactor = z;
+    emit zoomFactorChanged();
+    paintRect->setSize(mainPixmap.size() * zoomFactor);
+    update();
 }
 
 void Painter::setTool(int id)
-{
+{    
+    start = QPoint(1024, 1024);
+    end = QPoint(1024, 1024);
     unsetCursor();
     switch(id){
     case 1: tool = isPen; break;
     case 2: tool = isLine; break;
     case 3: tool = isRect; break;
     case 4: tool = isEraser;
-            setCursor(eraserCursor); break;
+        setCursor(*eraserCursor); break;
     default: tool = tool; break;
+        update();
     }
 }
 
-void Painter::penSettings(int penWidth, Qt::PenCapStyle penCapStyle)
+void Painter::setPen(QPainter *p)
 {
-    QPen temp(pen->pen());
+    QPen temp;
+    temp.setColor(foregroundColor);
     temp.setWidth(penWidth);
     temp.setCapStyle(penCapStyle);
-    pen->setPen(temp);
+    p->setPen(temp);
 }
 
-void Painter::lineSettings(Qt::PenStyle lineStyle,
-                           Qt::PenCapStyle lineCapStyle,
-                           bool polyLineEnabled, int lineWidth)
+void Painter::setLine(QPainter *p)
 {
-    isPolylineEnabled = polyLineEnabled;
-
-    QPen temp(pen->pen());
+    QPen temp;
+    temp.setColor(foregroundColor);
     temp.setWidth(lineWidth);
     temp.setCapStyle(lineCapStyle);
     temp.setStyle(lineStyle);
-    line->setPen(temp);
+    p->setPen(temp);
 }
 
-void Painter::rectSettings(int drawType, Qt::BrushStyle fillStyle,
-                           Qt::PenStyle boundaryStyle,
-                           Qt::PenJoinStyle boundaryJoinStyle,
-                           bool fillFColor, int boundaryWidth)
+void Painter::setRect(QPainter *p)
 {
-    type = static_cast<Painter::Type>(drawType);
-    fillWithFColor = fillFColor;
-    QColor color = (fillWithFColor) ? foregroundColor : backgroundColor;
-
-    QBrush btemp(rect->brush());
-    btemp.setColor(color);
+    QBrush btemp;
+    btemp.setColor((fillFColor) ? foregroundColor
+                                : backgroundColor);
     btemp.setStyle(fillStyle);
-    rect->setBrush(btemp);
+    p->setBrush(btemp);
 
-    QPen ptemp(rect->pen());
+    QPen ptemp;
+    ptemp.setColor(foregroundColor);
     ptemp.setStyle(boundaryStyle);
     ptemp.setJoinStyle(boundaryJoinStyle);
     ptemp.setWidth(boundaryWidth);
-    rect->setPen(ptemp);
+    p->setPen(ptemp);
 }
 
-void Painter::eraserSettings(int size)
+void Painter::setEraser(QPainter *p)
 {
-    eraserCursor = eraserCursor.scaled(size, size);
-    setCursor(eraserCursor);
+    *eraserCursor = eraserCursor->scaled(eraserSize, eraserSize);
+    setCursor(*eraserCursor);
+    QPen temp(QBrush(backgroundColor),eraserSize);
+    temp.setCapStyle(Qt::SquareCap);
+    p->setPen(temp);
+}
+
+void Painter::setFColor(QColor curColor)
+{
+    foregroundColor = curColor;
+}
+void Painter::setBColor(QColor curColor)
+{
+    backgroundColor = curColor;
+}
+
+void Painter::penSettings(int w,
+                          Qt::PenCapStyle c)
+{
+    penWidth = w;
+    penCapStyle = c;
+}
+
+
+void Painter::lineSettings(Qt::PenStyle l,
+                           Qt::PenCapStyle c,
+                           bool p, int w)
+{
+    lineStyle = l;
+    lineCapStyle = c;
+    polyLineEnabled = p;
+    lineWidth = w;
+}
+
+
+void Painter::rectSettings(int d, Qt::BrushStyle f,
+                           Qt::PenStyle b,
+                           Qt::PenJoinStyle bj,
+                           bool c, int w)
+{
+    drawType = d;
+    fillStyle = f;
+    boundaryStyle = b;
+    boundaryJoinStyle = bj;
+    fillFColor = c;
+    boundaryWidth = w;
+}
+void Painter::eraserSettings(int s)
+{
+    eraserSize = s;
 }

@@ -1,0 +1,1 @@
+The source code is edited in Qt Creator without using Qt Designer.

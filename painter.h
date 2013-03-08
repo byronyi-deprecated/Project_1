@@ -84,9 +84,6 @@ private:
     QPoint end;
     QVector<QPoint > polyline;
 
-//    QVector<QPixmap*> unDoList;
-//    QVector<QPixmap*> reDoList;
-
     enum Tool {null, isPen, isLine, isRect, isEraser} tool;
     double zoomFactor;
     QColor foregroundColor;

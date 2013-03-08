@@ -18,8 +18,7 @@ SOURCES += main.cpp\
     pendialog.cpp \
     linedialog.cpp \
     rectdialog.cpp \
-    eraserdialog.cpp \
-    eraser.cpp
+    eraserdialog.cpp
 
 RESOURCES = spreadsheet.qrc
 

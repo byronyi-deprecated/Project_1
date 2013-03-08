@@ -118,10 +118,10 @@ void Painter::mousePressEvent(QMouseEvent *e)
     if(e->button() == Qt::LeftButton)
     {
         if(tool == null) return;
-
-        //        if(polyLineEnabled) polyline.append(e->pos());
-        //        else
-        start = e->pos();
+        if(tool == isLine && polyLineEnabled)
+            polyline.append(e->pos());
+        else
+            start = e->pos();
         isPainting = true;
         backupPixmap = mainPixmap;
         undo = true;
@@ -153,8 +153,12 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
 {
     cursorPos = e->pos();
     emit cursorChanged();
-
-    if(e->buttons() & Qt::LeftButton)
+    if(tool == isLine && polyLineEnabled && isPainting)
+    {
+        polyline.last() = e->pos();
+        update();
+    }
+    else if(e->buttons() & Qt::LeftButton)
     {
         end = e->pos();
         update();
@@ -166,19 +170,22 @@ void Painter::mouseReleaseEvent(QMouseEvent *e)
     if(e->button() == Qt::LeftButton)
     {
         if(tool == null) return;
-        end = e->pos();
-        qDebug() << end.x() << "," << end.y() << endl;
-        isPainting = false;
+        if(tool == isLine && polyLineEnabled && isPainting)
+            polyline.append(e->pos());
+        else{
+            isPainting = false;
+            end = e->pos();
+        }
         update();
     }
 }
 
 void Painter::mouseDoubleClickEvent(QMouseEvent *e)
 {
-    if(e->buttons() == Qt::LeftButton && polyLineEnabled)
+    if(e->buttons() == Qt::LeftButton &&
+            tool == isLine && polyLineEnabled)
     {
-        if(tool == null) return;
-        end = e->pos();
+        isPainting = false;
         update();
         polyline.clear();
     }
@@ -209,8 +216,13 @@ void Painter::paintEvent(QPaintEvent * /* e */)
             break;
         case isLine:
             setLine(&painter);
-            painter.drawLine(start * (1/zoomFactor),
-                             end * (1/zoomFactor));
+            if(polyLineEnabled && !polyline.empty())
+                for(int i = 0; i < polyline.size() - 1; i++)
+                    painter.drawLine(polyline[i] * (1/zoomFactor),
+                                     polyline[i+1] * (1/zoomFactor));
+            else
+                painter.drawLine(start * (1/zoomFactor),
+                                 end * (1/zoomFactor));
             break;
         case isRect:
             setRect(&painter);
@@ -243,128 +255,6 @@ void Painter::paintEvent(QPaintEvent * /* e */)
         QPainter p(this);
         p.drawPixmap((*paintRect), mainPixmap);
     }
-
-    //    if(!mainPixmap) return;
-    //    QPainter painter;
-    //    if(isPainting)
-    //    {
-    //        if(tool == isRect || tool == isLine)
-    //            temp = mainPixmap;
-    //        painter.begin(&temp);
-    //    }
-    //    else
-    //    {
-    //        painter.begin(&mainPixmap);
-    //    }
-    //    QRect r(start, end);
-    //    switch(tool){
-    //    case isPen:
-    //        setPen(&painter);
-    //        painter.drawLine(start, end);
-    //        start = end;
-    //        break;
-    //    case isEraser:
-    //        setEraser(&painter);
-    //        painter.drawLine(start, end);
-    //        start = end;
-    //        break;
-    //    case isLine:
-    //        setLine(&painter);
-    //        painter.drawLine(start, end);
-    //        break;
-    //    case isRect:
-    //        setRect(&painter);
-    //        r = r.normalized();
-    //        switch(drawType){
-    //        case 1:
-    //            painter.drawRect(r);
-    //            break;
-    //        case 2:
-    //            painter.drawRoundedRect(r, 20, 20,
-    //                                    Qt::RelativeSize);
-    //            break;
-    //        case 3:
-    //            painter.drawPie(r, 0, 5760);
-    //            break;
-    //        case 4:
-    //            painter.drawEllipse(r);
-    //            break;
-    //        }
-    //        break;
-    //    default: break;
-    //        painter.end();
-    //    }
-
-    //    QPainter p(this);
-    //    if(isPainting)
-    //        p.drawPixmap((*paintRect), temp);
-    //    else
-    //    {
-    //        p.drawPixmap((*paintRect), mainPixmap);
-    //    }
-
-    //    if(!mainPixmap) return;
-    //    QPainter painter;
-
-    //    if(tool == isPen || tool == isEraser){
-    //        painter.begin(&mainPixmap);
-    //        if(tool == isPen){
-    //            setPen(&painter);
-    //            painter.drawLine(start, end);
-    //            start = end;
-    //        }
-    //        else{
-    //            setEraser(&painter);
-    //            painter.drawLine(start, end);
-    //            start = end;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        QRect r(start, end);
-    //        if(isPainting){
-    //            temp = mainPixmap;
-    //            painter.begin(&temp);
-    //        }
-    //        else {
-    //            backupPixmap = mainPixmap;
-    //            painter.begin(&mainPixmap);
-    //        }
-    //        if(tool == isLine){
-    //            setLine(&painter);
-    //            painter.drawLine(start, end);
-    //        }
-    //        else{
-    //            setRect(&painter);
-    //            r = r.normalized();
-    //            switch(drawType){
-    //            case 1:
-    //                painter.drawRect(r);
-    //                break;
-    //            case 2:
-    //                painter.drawRoundedRect(r, 20, 20,
-    //                                        Qt::RelativeSize);
-    //                break;
-    //            case 3:
-    //                painter.drawPie(r, 0, 5760);
-    //                break;
-    //            case 4:
-    //                painter.drawEllipse(r);
-    //                break;
-    //            default:
-    //                painter.drawRect(r);
-    //            }
-    //        }
-    //    }
-    //    painter.end();
-    //    QPainter p(this);
-    //    if(tool == isPen || tool == isEraser)
-    //        p.drawPixmap((*paintRect), mainPixmap);
-    //    else if(isPainting)
-    //        p.drawPixmap((*paintRect), temp);
-    //    else
-    //        p.drawPixmap((*paintRect), mainPixmap);
-
 }
 
 void Painter::setZoomFactor(double z)

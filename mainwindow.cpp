@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowIcon(QIcon(":/images/icon.jpg"));
     setCurrentFile("");
+    connect(painter, SIGNAL(imageModified(bool)),
+            this, SLOT(setWindowModified(bool)));
 }
 
 MainWindow::~MainWindow()

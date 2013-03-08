@@ -44,7 +44,8 @@ void Painter::clear()
     paintRect->setSize(mainPixmap.size());
     mainPixmap.fill(backgroundColor);
     temp = mainPixmap;
-    update();
+    update();    
+    emit imageModified(true);
 }
 
 bool Painter::readFile(QString fileName)
@@ -89,7 +90,8 @@ void Painter::reDo()
     swap();
     undo = true;
     temp = mainPixmap;
-    update();
+    update();    
+    emit imageModified(true);
 }
 
 bool Painter::setSize(QSize size)
@@ -101,7 +103,6 @@ bool Painter::setSize(QSize size)
         mainPixmap = QPixmap(QSize(1, 1));
         mainPixmap.fill();
         temp = mainPixmap;
-        emit imageModified(true);
         undo = false;
     }
     backupPixmap = mainPixmap;
@@ -110,6 +111,7 @@ bool Painter::setSize(QSize size)
     undo = true;
     temp = mainPixmap;
     update();
+    emit imageModified(true);
     return true;
 }
 
@@ -157,11 +159,13 @@ void Painter::mouseMoveEvent(QMouseEvent *e)
     {
         polyline.last() = e->pos();
         update();
+        emit imageModified(true);
     }
     else if(e->buttons() & Qt::LeftButton)
     {
         end = e->pos();
         update();
+        emit imageModified(true);
     }
 }
 //to be done
@@ -177,6 +181,7 @@ void Painter::mouseReleaseEvent(QMouseEvent *e)
             end = e->pos();
         }
         update();
+        emit imageModified(true);
     }
 }
 
@@ -187,6 +192,7 @@ void Painter::mouseDoubleClickEvent(QMouseEvent *e)
     {
         isPainting = false;
         update();
+        emit imageModified(true);
         polyline.clear();
     }
 }

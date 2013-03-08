@@ -12,15 +12,15 @@ RectDialog::RectDialog(QWidget *parent) :
     label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(1, 40);
-    spinBox->setRange(1, 40);
-
-    spinBox->setValue(10);
+    slider->setRange(1, 20);
+    spinBox->setRange(1, 20);
 
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
-            slider, SLOT(setValue(int)));
+            slider, SLOT(setValue(int)));    
+
+    spinBox->setValue(10);
 
     yes = new QPushButton(tr("&Yes"));
     no = new QPushButton(tr("&No"));
@@ -62,6 +62,7 @@ void RectDialog::createDrawType()
     drawtype->addButton(circle, 3);
     drawtype->addButton(ellipse, 4);
     drawtype->setExclusive(true);
+    rectangle->toggle();
 
     drawLayout = new QHBoxLayout;
     drawLayout->addWidget(rectangle);
@@ -109,6 +110,7 @@ void RectDialog::createFillStyle()
     fillstyle->addButton(cDiag, 14);
     fillstyle->addButton(nopattern, 0);
     fillstyle->setExclusive(true);
+    nopattern->toggle();
 
     fillLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     fillLayout->addWidget(solid);
@@ -148,6 +150,7 @@ void RectDialog::createBDStyle()
     bdstyle->addButton(dadodo, 5);
     bdstyle->addButton(noline, 0);
     bdstyle->setExclusive(true);
+    solidline->toggle();
 
     bdLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     bdLayout->addWidget(solidline);
@@ -172,6 +175,7 @@ void RectDialog::createBDJoinStyle()
     bdjoinstyle->addButton(bevel, 0x40);
     bdjoinstyle->addButton(round, 0x80);
     bdjoinstyle->setExclusive(true);
+    miter->toggle();
 
     bdjoinLayout = new QHBoxLayout;
     bdjoinLayout->addWidget(miter);
@@ -191,6 +195,7 @@ void RectDialog::createFillColor()
     fillcolor->addButton(fground, 1);
     fillcolor->addButton(bground, 1);
     fillcolor->setExclusive(true);
+    fground->toggle();
 
     colorLayout = new QVBoxLayout;
     colorLayout->addWidget(fground);

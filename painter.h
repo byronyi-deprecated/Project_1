@@ -65,7 +65,7 @@ protected:
     void paintEvent(QPaintEvent *);
 private:
     void createPaintDevice();
-    void clearUnReDo();
+    void swap();
     void setPen(QPainter*);
     void setLine(QPainter*);
     void setRect(QPainter*);

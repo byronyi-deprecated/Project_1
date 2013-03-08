@@ -11,12 +11,12 @@ Painter::Painter(QWidget *parent) :
     this->setMouseTracking(true);
     emit imageModified(false);
     isPainting = false;
+    undo = true;
     foregroundColor = Qt::black;
     backgroundColor = Qt::white;
     eraserCursor = new QPixmap;
     eraserCursor->load(":/images/eraserCursor.bmp");
     *eraserCursor = eraserCursor->scaled(QSize(10, 10));
-    //    QMessageBox::warning(this,"", QString::number(eraserCursor.width()));
 }
 
 void Painter::createPaintDevice()
@@ -35,16 +35,6 @@ void Painter::createPaintDevice()
     eraserSettings(5);
 }
 
-//void Painter::clearUnReDo()
-//{
-//    for(int i = 0; i < unDoList.size(); i++)
-//        delete unDoList[i];
-//    for(int i = 0; i < reDoList.size(); i++)
-//        delete reDoList[i];
-//    unDoList.clear();
-//    reDoList.clear();
-//}
-
 void Painter::clear()
 {
     start = QPoint(1024, 1024);
@@ -53,7 +43,7 @@ void Painter::clear()
     zoomFactor = 1.0;
     paintRect->setSize(mainPixmap.size());
     mainPixmap.fill(backgroundColor);
-    //    unDoList.append(pixmap);
+    temp = mainPixmap;
     update();
 }
 
@@ -61,11 +51,11 @@ bool Painter::readFile(QString fileName)
 {
     if(!fileName.isEmpty())
     {
-        //        clearUnReDo();
         mainPixmap.load(fileName);
-        //        unDoList.append(pixmap);
+        backupPixmap = mainPixmap;
         zoomFactor = 1.0;
         paintRect->setSize(mainPixmap.size());
+        temp = mainPixmap;
         update();
     }
     return !fileName.isEmpty();
@@ -77,26 +67,29 @@ bool Painter::writeFile(QString fileName)
     return saveImage.save(fileName);
 }
 
-void Painter::unDo()
+void Painter::swap()
 {
-    if(!undo) return;
     QPixmap temp(mainPixmap);
     mainPixmap = backupPixmap;
     backupPixmap = temp;
+}
+
+void Painter::unDo()
+{
+    if(!undo) return;
+    swap();
     undo = false;
-    //    if(unDoList.isEmpty()) return;
-    //    reDoList.append(unDoList.last());
-    //    unDoList.pop_back();
+    temp = mainPixmap;
+    update();
 }
 
 void Painter::reDo()
 {
-    QPixmap temp(mainPixmap);
-    mainPixmap = backupPixmap;
-    backupPixmap = mainPixmap;
-    //    if(reDoList.isEmpty()) return;
-    //    unDoList.append(reDoList.last());
-    //    reDoList.pop_back();
+    if(undo) return;
+    swap();
+    undo = true;
+    temp = mainPixmap;
+    update();
 }
 
 bool Painter::setSize(QSize size)
@@ -107,17 +100,18 @@ bool Painter::setSize(QSize size)
     {
         mainPixmap = QPixmap(QSize(1, 1));
         mainPixmap.fill();
+        temp = mainPixmap;
         emit imageModified(true);
         undo = false;
     }
     backupPixmap = mainPixmap;
     mainPixmap = mainPixmap.scaled(size);
     paintRect->setSize(size);
+    undo = true;
+    temp = mainPixmap;
     update();
     return true;
 }
-
-//to be done
 
 void Painter::mousePressEvent(QMouseEvent *e)
 {
@@ -129,6 +123,10 @@ void Painter::mousePressEvent(QMouseEvent *e)
         //        else
         start = e->pos();
         isPainting = true;
+        backupPixmap = mainPixmap;
+        undo = true;
+        if(tool == isPen || tool == isEraser)
+            temp = mainPixmap;
     }
     if(e->button() == Qt::RightButton)
     {
@@ -167,6 +165,7 @@ void Painter::mouseReleaseEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
     {
+        if(tool == null) return;
         end = e->pos();
         qDebug() << end.x() << "," << end.y() << endl;
         isPainting = false;
@@ -187,39 +186,33 @@ void Painter::mouseDoubleClickEvent(QMouseEvent *e)
 
 void Painter::paintEvent(QPaintEvent * /* e */)
 {
-    if(!mainPixmap) return;
     QPainter painter;
-    undo = true;
-
-    if(tool == isPen || tool == isEraser){
-        painter.begin(&mainPixmap);
-        if(tool == isPen){
-            setPen(&painter);
-            painter.drawLine(start, end);
-            start = end;
-        }
-        else{
-            setEraser(&painter);
-            painter.drawLine(start, end);
-            start = end;
-        }
-    }
-    else
+    if(isPainting)
     {
-        QRect r(start, end);
-        if(isPainting){
+        if(tool == isRect || tool == isLine)
             temp = mainPixmap;
-            painter.begin(&temp);
-        }
-        else {
-            backupPixmap = mainPixmap;
-            painter.begin(&mainPixmap);
-        }
-        if(tool == isLine){
+        painter.begin(&temp);
+        QRect r(start * (1/zoomFactor),
+                end * (1/zoomFactor));
+        switch(tool){
+        case isPen:
+            setPen(&painter);
+            painter.drawLine(start * (1/zoomFactor),
+                             end * (1/zoomFactor));
+            start = end;
+            break;
+        case isEraser:
+            setEraser(&painter);
+            painter.drawLine(start * (1/zoomFactor),
+                             end * (1/zoomFactor));
+            start = end;
+            break;
+        case isLine:
             setLine(&painter);
-            painter.drawLine(start, end);
-        }
-        else{
+            painter.drawLine(start * (1/zoomFactor),
+                             end * (1/zoomFactor));
+            break;
+        case isRect:
             setRect(&painter);
             r = r.normalized();
             switch(drawType){
@@ -236,19 +229,141 @@ void Painter::paintEvent(QPaintEvent * /* e */)
             case 4:
                 painter.drawEllipse(r);
                 break;
-            default:
-                painter.drawRect(r);
             }
+            break;
+        default: break;
         }
-    }
-    painter.end();
-    QPainter p(this);
-    if(tool == isPen || tool == isEraser)
-        p.drawPixmap((*paintRect), mainPixmap);
-    else if(isPainting)
+        painter.end();
+        QPainter p(this);
         p.drawPixmap((*paintRect), temp);
+    }
     else
+    {
+        mainPixmap = temp;
+        QPainter p(this);
         p.drawPixmap((*paintRect), mainPixmap);
+    }
+
+    //    if(!mainPixmap) return;
+    //    QPainter painter;
+    //    if(isPainting)
+    //    {
+    //        if(tool == isRect || tool == isLine)
+    //            temp = mainPixmap;
+    //        painter.begin(&temp);
+    //    }
+    //    else
+    //    {
+    //        painter.begin(&mainPixmap);
+    //    }
+    //    QRect r(start, end);
+    //    switch(tool){
+    //    case isPen:
+    //        setPen(&painter);
+    //        painter.drawLine(start, end);
+    //        start = end;
+    //        break;
+    //    case isEraser:
+    //        setEraser(&painter);
+    //        painter.drawLine(start, end);
+    //        start = end;
+    //        break;
+    //    case isLine:
+    //        setLine(&painter);
+    //        painter.drawLine(start, end);
+    //        break;
+    //    case isRect:
+    //        setRect(&painter);
+    //        r = r.normalized();
+    //        switch(drawType){
+    //        case 1:
+    //            painter.drawRect(r);
+    //            break;
+    //        case 2:
+    //            painter.drawRoundedRect(r, 20, 20,
+    //                                    Qt::RelativeSize);
+    //            break;
+    //        case 3:
+    //            painter.drawPie(r, 0, 5760);
+    //            break;
+    //        case 4:
+    //            painter.drawEllipse(r);
+    //            break;
+    //        }
+    //        break;
+    //    default: break;
+    //        painter.end();
+    //    }
+
+    //    QPainter p(this);
+    //    if(isPainting)
+    //        p.drawPixmap((*paintRect), temp);
+    //    else
+    //    {
+    //        p.drawPixmap((*paintRect), mainPixmap);
+    //    }
+
+    //    if(!mainPixmap) return;
+    //    QPainter painter;
+
+    //    if(tool == isPen || tool == isEraser){
+    //        painter.begin(&mainPixmap);
+    //        if(tool == isPen){
+    //            setPen(&painter);
+    //            painter.drawLine(start, end);
+    //            start = end;
+    //        }
+    //        else{
+    //            setEraser(&painter);
+    //            painter.drawLine(start, end);
+    //            start = end;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        QRect r(start, end);
+    //        if(isPainting){
+    //            temp = mainPixmap;
+    //            painter.begin(&temp);
+    //        }
+    //        else {
+    //            backupPixmap = mainPixmap;
+    //            painter.begin(&mainPixmap);
+    //        }
+    //        if(tool == isLine){
+    //            setLine(&painter);
+    //            painter.drawLine(start, end);
+    //        }
+    //        else{
+    //            setRect(&painter);
+    //            r = r.normalized();
+    //            switch(drawType){
+    //            case 1:
+    //                painter.drawRect(r);
+    //                break;
+    //            case 2:
+    //                painter.drawRoundedRect(r, 20, 20,
+    //                                        Qt::RelativeSize);
+    //                break;
+    //            case 3:
+    //                painter.drawPie(r, 0, 5760);
+    //                break;
+    //            case 4:
+    //                painter.drawEllipse(r);
+    //                break;
+    //            default:
+    //                painter.drawRect(r);
+    //            }
+    //        }
+    //    }
+    //    painter.end();
+    //    QPainter p(this);
+    //    if(tool == isPen || tool == isEraser)
+    //        p.drawPixmap((*paintRect), mainPixmap);
+    //    else if(isPainting)
+    //        p.drawPixmap((*paintRect), temp);
+    //    else
+    //        p.drawPixmap((*paintRect), mainPixmap);
 
 }
 

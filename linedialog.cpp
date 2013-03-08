@@ -10,15 +10,15 @@ LineDialog::LineDialog(QWidget *parent) :
     label = new QLabel(tr("Line width"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(1, 30);
-    spinBox->setRange(1, 30);
-
-    spinBox->setValue(10);
+    slider->setRange(1, 20);
+    spinBox->setRange(1, 20);
 
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));
+
+    spinBox->setValue(10);
 
     widthLayout = new QHBoxLayout;
     widthLayout->addWidget(slider);
@@ -63,6 +63,7 @@ void LineDialog::createLineStyle()
     linestyle->addButton(dado, 4);
     linestyle->addButton(dadodo, 5);
     linestyle->setExclusive(true);
+    solidline->toggle();
 
     linestyleGroupBox = new QGroupBox(tr("Line style"));
     linestyleLayout = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -84,6 +85,7 @@ void LineDialog::createCapStyle()
     capstyle->addButton(flat, 0x00);
     capstyle->addButton(square, 0x10);
     capstyle->addButton(round, 0x30);
+    round->toggle();
 
     capstyleGroupBox = new QGroupBox(tr("Cap style"));
     capstyleLayout = new QHBoxLayout;
@@ -101,6 +103,7 @@ void LineDialog::createLineType()
     linetype = new QButtonGroup;
     linetype->addButton(single);
     linetype->addButton(poly);
+    single->toggle();
 
     linetypeGroupBox = new QGroupBox(tr("Line type"));
     linetypeLayout = new QVBoxLayout;

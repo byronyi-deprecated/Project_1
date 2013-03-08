@@ -242,7 +242,10 @@ void Painter::paintEvent(QPaintEvent * /* e */)
                                         Qt::RelativeSize);
                 break;
             case 3:
-                painter.drawPie(r, 0, 5760);
+                if(r.height() > r.width())
+                    r.setHeight(r.width());
+                else r.setWidth(r.height());
+                painter.drawArc(r, 0, 5760);
                 break;
             case 4:
                 painter.drawEllipse(r);
@@ -326,8 +329,9 @@ void Painter::setEraser(QPainter *p)
 {
     *eraserCursor = eraserCursor->scaled(eraserSize, eraserSize);
     setCursor(*eraserCursor);
+    update();
     QPen temp(QBrush(backgroundColor),eraserSize);
-    temp.setCapStyle(Qt::SquareCap);
+    temp.setCapStyle(Qt::RoundCap);
     p->setPen(temp);
 }
 

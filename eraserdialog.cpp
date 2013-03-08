@@ -6,13 +6,13 @@ EraserDialog::EraserDialog(QWidget *parent) :
     label = new QLabel(tr("Eraser Size"));
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
-    slider->setRange(10, 50);
-    spinBox->setRange(10, 50);
+    slider->setRange(5, 50);
+    spinBox->setRange(5, 50);
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));
-    spinBox->setValue(20);
+    spinBox->setValue(5);
 
     yes = new QPushButton(tr("&Yes"));
     no = new QPushButton(tr("&No"));

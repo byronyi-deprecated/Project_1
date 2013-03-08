@@ -8,15 +8,15 @@ PenDialog::PenDialog(QWidget *parent) :
     slider = new QSlider(Qt::Horizontal);
     spinBox = new QSpinBox;
 
-    slider->setRange(1, 20);
-    spinBox->setRange(1, 20);
+    slider->setRange(1, 10);
+    spinBox->setRange(1, 10);
 
     connect(spinBox, SIGNAL(valueChanged(int)),
             slider, SLOT(setValue(int)));
     connect(slider, SIGNAL(valueChanged(int)),
             spinBox, SLOT(setValue(int)));
 
-    spinBox->setValue(10);
+    spinBox->setValue(2);
 
     capstyle = new QGroupBox(tr("Cap style"));
     flat = new QRadioButton(tr("Flat cap"));
